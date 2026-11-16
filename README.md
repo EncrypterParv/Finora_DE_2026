@@ -22,12 +22,12 @@
 
 | Role | Name | Enrollment No. | GitHub Username |
 |------|------|----------------|-----------------|
-| Group Lead | | | |
-| Member 2 | | | |
-| Member 3 | | | |
-| Member 4 | | | |
+| Group Lead | Parv Goyal | 2501010328 | EncrypterParv |
+| Member 2 | Tarunya Kesharwani | 2501010477 | TarunyaProgrammer |
+| Member 3 | Devansh Chauhan | 2501010702 | SudoDevansh |
+| Member 4 | Yash Srivastava | 2501010517 | YashDoesCode |
 
-**Team No.:** ____ · **Section:** ____ · **Repository URL:** ____
+**Team No.:** 91 · **Section:** E · **Repository URL:** https://github.com/EncrypterParv/Finora_DE_2026
 
 ---
 

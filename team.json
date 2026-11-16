@@ -1,0 +1,13 @@
+{
+  "team_number": "91",
+  "section": "E",
+  "repository_url": "https://github.com/EncrypterParv/Finora_DE_2026",
+  "group_lead": { "name": "Parv Goyal", "enrollment_no": "2501010328", "github": "EncrypterParv" },
+  "members": [
+    { "name": "Tarunya Kesharwani", "enrollment_no": "2501010477", "github": "TarunyaProgrammer" },
+    { "name": "Devansh Chauhan", "enrollment_no": "2501010702", "github": "SudoDevansh" },
+    { "name": "Yash Srivastava", "enrollment_no": "2501010517", "github": "YashDoesCode" }
+  ],
+  "postgres_version": "TODO",
+  "laptop_used_for_benchmarks": "TODO"
+}
