@@ -32,11 +32,17 @@ Assumptions are labelled A1, A2, …
 
 ### P5 – Checkout and payments (R11, W01, W02, W03)
 
-<!-- Devansh: Need / Stakeholders / Type / Assumptions -->
+**Need:** Checkout must create a pending booking instantly; the payments team needs the queue of bookings stuck in payment for over 30 minutes; payment-gateway callbacks must confirm bookings and customer cancellations must record the refund immediately, even under heavy load.
+**Stakeholders:** Payments team (primary), traveller, customer support.
+**Type:** Customer-facing / real-time (R11, W01, W02, W03).
+**Assumptions:** (A1) A booking stays PENDING_PAYMENT until the gateway confirms it; W02 confirms the oldest pending booking first (lowest booking_id). (A2) A cancellation always records both a time and a refund, and the refund never exceeds the amount paid. (A3) "Under load" means many concurrent checkouts, so these writes must touch few rows and few indexes.
 
 ### P6 – Coupons-never-used report returns nothing (R13)
 
-<!-- Devansh: Need / Stakeholders / Type / Assumptions -->
+**Need:** Marketing wants the list of coupons no customer has ever used, so that it can retire or re-promote them, but the report always comes back empty.
+**Stakeholders:** Marketing (primary).
+**Type:** Reporting / analytics (R13).
+**Assumptions:** (A1) The empty result is a correctness bug, not a performance problem: most bookings have no coupon, so `bookings.coupon_code` contains NULLs, and `x NOT IN (… NULL …)` is never TRUE. To be fixed and proven in Phase 4. (A2) "Used" means appearing on any booking, including cancelled ones, as R13 is written.
 
 ### P7 – Room-nights per city and front-desk check-in (R15, W05)
 
