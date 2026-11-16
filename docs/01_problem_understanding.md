@@ -18,11 +18,17 @@ Assumptions are labelled A1, A2, …
 
 ### P3 – My Trips, booking lookup and sign-in (R05, R06, R23)
 
-<!-- Tarunya: Need / Stakeholders / Type / Assumptions -->
+**Need:** A signed-in traveller must instantly see their upcoming confirmed trips (flights and hotels, by travel date); support agents must open any booking from its reference; sign-in must find the customer by email regardless of letter case. Delays here make the app feel broken.
+**Stakeholders:** Traveller (primary), customer support.
+**Type:** Customer-facing / real-time (R05, R06, R23).
+**Assumptions:** (A1) "Upcoming" means status CONFIRMED, as R05 filters. (A2) `booking_ref` is unique per booking (verified in seed data). (A3) Emails are unique ignoring case (no case-only duplicates in the seed data), so sign-in returns at most one customer.
 
 ### P4 – Airline manifests, low-load reports and cancellation rates (R07, R08, R14, R19, W04)
 
-<!-- Tarunya: Need / Stakeholders / Type / Assumptions -->
+**Need:** Airline partners need a flight's passenger manifest sorted by seat, revenue management needs July flights with fewer than 5 passengers booked, partnerships need cancellation rates per airline, operations need passenger counts for every June flight, and flight status must be updated in bulk once flights depart.
+**Stakeholders:** Airline partner (primary), revenue management, flight operations.
+**Type:** Mixed. R07 is real-time (gate/check-in); R08 is an interactive partner tool; R14 and R19 are reporting/analytics; W04 is a batch job.
+**Assumptions:** (A1) Manifests exclude cancelled bookings, as R07 does; passengers without a seat (not yet checked in) are listed last. (A2) R08 and R19 count passengers on all bookings, including cancelled ones, exactly as the queries are written. (A3) W04 runs once, after 1 Jul 2026 00:00 IST.
 
 ### P5 – Checkout and payments (R11, W01, W02, W03)
 
