@@ -28,8 +28,8 @@ Assumptions are labelled A1, A2, …
 
 ### P7 – Room-nights per city and front-desk check-in (R15, W05)
 
-<!-- Yash: Need / Stakeholders / Type / Assumptions -->
+**Need:** Hotel partners need room-nights sold per city for a month; the front desk must assign rooms to all confirmed guests checking in today, quickly. **Stakeholders:** Hotel partner, front desk. **Type:** R15 reporting; W05 interactive (< 250 ms). **Assumptions:** (A1) Room-nights count only the nights inside the month, × rooms, on non-cancelled bookings. (A2) W05 assigns rooms only to CONFIRMED bookings checking in that day that have no room yet.
 
 ### P8 – Finance, loyalty and insight reports; 20× growth (R09, R12, R16, R17, R20, R21, R22, R25)
 
-<!-- Yash: Need / Stakeholders / Type / Assumptions -->
+**Need:** Finance, loyalty and insights teams need revenue by month and type, booking lead times, repeat customers, last-minute bookings, top routes, senior concessions and running totals; support pages through all bookings. These reports time out, and bookings will grow 20×. **Stakeholders:** Finance / revenue management, loyalty, marketing / insights, support. **Type:** Reporting (R09, R12, R16, R17, R20, R21, R25); R22 interactive (< 250 ms). **Assumptions:** (A1) Reports may use slightly stale summary data if the refresh is stated. (A2) Revenue excludes cancellations; all periods are IST calendar periods.
