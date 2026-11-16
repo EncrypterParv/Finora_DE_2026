@@ -12,7 +12,7 @@ The `mmt` database represents a multi-vertical online travel agency (OTA) suppor
 - **Target Engine:** PostgreSQL 15 or newer (verified on PostgreSQL 18.6)
 - **Session Timezone:** `Asia/Kolkata` (all timestamps carry `+05:30` offsets)
 - **Build & Load Sequence:**
-  1. `sql/01_schema.sql`: Creates schema `mmt`, defines domain types, tables, primary keys, foreign keys, unique keys, and check constraints.
+  1. `sql/01_schema.sql`: Creates schema `mmt`, defines tables, primary keys, foreign keys, unique keys, and check constraints.
   2. `sql/02_load_data.sql`: Populates tables in strict dependency order using `\copy`, executes `ANALYZE`, and verifies row counts and data integrity assertions.
 
 ### Table Loading Dependency Order
@@ -45,7 +45,7 @@ Reference table of commercial airports identified by standard IATA codes.
 |---|---|---|---|
 | `iata_code` | `CHAR(3)` | `NOT NULL`, `PRIMARY KEY`, `CHECK (iata_code ~ '^[A-Z]{3}$')` | Fixed 3-letter uppercase IATA standard identifier (e.g., DEL, BOM). |
 | `airport_name` | `TEXT` | `NOT NULL` | Full airport display name; variable length text avoids arbitrary truncation. |
-| `city_name` | `TEXT` | `NOT NULL` | Serving city name for search filters (R01, R02). |
+| `city_name` | `TEXT` | `NOT NULL` | City served by the airport (display/reference). |
 | `country_code` | `CHAR(2)` | `NOT NULL` | Standard ISO 3166-1 alpha-2 country code (e.g., IN). |
 
 ### 2.2 `airlines`
@@ -188,7 +188,7 @@ Hotel stay vertical specialization table tracking property, dates, and room allo
 | `check_out` | `DATE` | `NOT NULL`, `CHECK (check_out > check_in)` | Departure date; constrained to follow check-in. |
 | `rooms` | `SMALLINT` | `NOT NULL`, `CHECK (rooms >= 1)` | Number of physical rooms reserved. |
 | `guests` | `SMALLINT` | `NOT NULL`, `CHECK (guests >= 1)` | Total guest count. |
-| `room_number` | `VARCHAR(5)` | Nullable, `CHECK (room_number IS NULL OR room_number ~ '^[0-9]{3,4}$')` | Room number assigned at check-in (W05); stored as text because W05 assigns text values and room numbers can have leading zeros or alphanumeric codes. |
+| `room_number` | `VARCHAR(5)` | Nullable, `CHECK (room_number IS NULL OR room_number ~ '^[0-9]{3,4}$')` | Room number assigned at check-in (W05). Stored as text because W05 assigns a ::text value and it is a label, not a quantity; the CHECK allows 3–4 digits. |
 
 *Additional Table Constraints:*
 - `UNIQUE (booking_id, hotel_id)`: Composite candidate key supporting foreign key referencing from `hotel_reviews`.
@@ -220,14 +220,19 @@ Verified guest reviews submitted after completed hotel stays.
 - **Composite Primary Key:** `passengers(booking_id, seq_no)` uniquely identifies a traveller within a given flight booking using a composite key, avoiding unnecessary surrogate sequences.
 
 ### 3.2 Foreign Keys and ON DELETE Action Rules
-1. `bookings.customer_id -> customers(customer_id) ON DELETE RESTRICT`: Prevents deletion of customer records that have active or historical booking records.
-2. `bookings.coupon_code -> coupons(coupon_code) ON DELETE RESTRICT`: Reference integrity for promotional vouchers. `ON DELETE SET NULL` is deliberately **not** used because setting `coupon_code` to `NULL` on an existing booking would violate the `chk_bookings_coupon_discount` constraint (`(coupon_code IS NULL) = (discount = 0)`), leaving a non-zero discount with a null coupon.
-3. `flight_bookings.booking_id -> bookings(booking_id) ON DELETE CASCADE`: Removing a flight booking automatically purges its vertical metadata.
-4. `flight_bookings.flight_id -> flights(flight_id) ON DELETE RESTRICT`: Scheduled flights cannot be deleted if reservations are booked on them.
-5. `passengers.booking_id -> flight_bookings(booking_id) ON DELETE CASCADE`: Passenger manifests are owned by the booking; deleting the flight booking cascades to remove all associated passengers.
-6. `hotel_bookings.booking_id -> bookings(booking_id) ON DELETE CASCADE`: Deleting a hotel booking removes its stay details.
-7. `hotel_bookings.hotel_id -> hotels(hotel_id) ON DELETE RESTRICT`: Hotels with existing bookings cannot be deleted.
-8. `hotel_reviews.(booking_id, hotel_id) -> hotel_bookings(booking_id, hotel_id) ON DELETE CASCADE`: Reviews belong to hotel reservations and are automatically purged if the reservation is deleted.
+1. `flights.airline_code -> airlines(airline_code) ON DELETE RESTRICT`: Prevents deleting an airline while scheduled flights reference it.
+2. `flights.origin -> airports(iata_code) ON DELETE RESTRICT`: Prevents deleting an airport while departing flights reference it.
+3. `flights.destination -> airports(iata_code) ON DELETE RESTRICT`: Prevents deleting an airport while arriving flights reference it.
+4. `room_types.hotel_id -> hotels(hotel_id) ON DELETE RESTRICT`: Prevents deleting a hotel property while its room types exist.
+5. `bookings.customer_id -> customers(customer_id) ON DELETE RESTRICT`: Prevents deletion of customer records that have active or historical booking records.
+6. `bookings.coupon_code -> coupons(coupon_code) ON DELETE RESTRICT`: Reference integrity for promotional vouchers. `ON DELETE SET NULL` is deliberately **not** used because setting `coupon_code` to `NULL` on an existing booking would violate the `chk_bookings_coupon_discount` constraint (`(coupon_code IS NULL) = (discount = 0)`), leaving a non-zero discount with a null coupon.
+7. `flight_bookings.booking_id -> bookings(booking_id) ON DELETE CASCADE`: Removing a flight booking automatically purges its vertical metadata.
+8. `flight_bookings.flight_id -> flights(flight_id) ON DELETE RESTRICT`: Scheduled flights cannot be deleted if reservations are booked on them.
+9. `passengers.booking_id -> flight_bookings(booking_id) ON DELETE CASCADE`: Passenger manifests are owned by the booking; deleting the flight booking cascades to remove all associated passengers.
+10. `hotel_bookings.booking_id -> bookings(booking_id) ON DELETE CASCADE`: Deleting a hotel booking removes its stay details.
+11. `hotel_bookings.hotel_id -> hotels(hotel_id) ON DELETE RESTRICT`: Hotels with existing bookings cannot be deleted.
+12. `hotel_bookings(room_type_id, hotel_id) -> room_types ON DELETE RESTRICT` — see §3.3.
+13. `hotel_reviews.(booking_id, hotel_id) -> hotel_bookings(booking_id, hotel_id) ON DELETE CASCADE`: Reviews belong to hotel reservations and are automatically purged if the reservation is deleted.
 
 ### 3.3 Composite Foreign Keys Enforcing Multi-Table Consistency
 To prevent relational anomalies where a child record references attributes belonging to different entities:
@@ -241,7 +246,7 @@ To prevent relational anomalies where a child record references attributes belon
 | `customers` | 1 : N | `bookings` | A customer can place zero or many bookings; every booking belongs to one customer. |
 | `bookings` | 1 : 0..1 | `flight_bookings` | A booking is either a flight booking or not; at most one flight specialization row exists. |
 | `bookings` | 1 : 0..1 | `hotel_bookings` | A booking is either a hotel booking or not; at most one hotel specialization row exists. |
-| `flight_bookings` | 1 : N | `passengers` | Each flight booking has 1 to 9 passengers (manifest rows). |
+| `flight_bookings` | 1 : N | `passengers` | Each flight booking has 1 to 4 passengers in the seed data (manifest rows). |
 | `flights` | 1 : N | `flight_bookings` | A flight schedule accommodates multiple reservations across its cabin. |
 | `airlines` | 1 : N | `flights` | An airline operates multiple flight departures. |
 | `airports` | 1 : N | `flights` (origin) | An airport serves as origin for multiple departing flights. |
@@ -502,9 +507,9 @@ GROUP BY b.status ORDER BY b.status;
 - `PENDING_PAYMENT`: 34 bookings (0 assigned; 34 null)
 
 ### 6.3 Customer Email Case Sensitivity and R23
-The `customers.email` column has a standard B-tree `UNIQUE` constraint, which in PostgreSQL is case-sensitive (`test@rediffmail.com` and `Test@rediffmail.com` are treated as distinct). Query R23 performs case-insensitive lookup using `WHERE lower(email) = lower($1)`.
+The `customers.email` column has a standard B-tree `UNIQUE` constraint, which in PostgreSQL is case-sensitive (`test@rediffmail.com` and `Test@rediffmail.com` are treated as distinct). Query R23 performs case-insensitive lookup using `WHERE lower(email) = 'siddharth.sharma1021@rediffmail.com'`.
 - Query analysis confirms that the seed data contains **0 case-insensitive duplicates** (`count(*) - count(DISTINCT lower(email)) = 0`).
-- Because the baseline index is on `email` directly, R23 is forced to execute an expensive Sequential Scan over all 40,000 customers.
+- Because the baseline index is on `email` directly, R23 cannot use the email index, so a Sequential Scan is expected; to be confirmed in the Phase 3 baseline plan.
 - **Phase 4 Opportunity:** Introduce an expression index `CREATE UNIQUE INDEX idx_customers_lower_email ON customers (lower(email));` to guarantee both case-insensitive uniqueness and index-accelerated lookups for R23.
 
 ---
@@ -544,7 +549,7 @@ These transitive dependencies violate 3NF.
 #### 2. Transitive Dependency in `hotel_bookings` (2NF)
 In `hotel_bookings`, the primary key is `booking_id`. However, each `room_type_id` already belongs to a specific `hotel_id` in `room_types` (`room_type_id -> hotel_id`). Storing `hotel_id` alongside `room_type_id` introduces a transitive dependency:
 $$\text{booking\_id} \to \text{room\_type\_id} \to \text{hotel\_id}$$
-- *Why kept:* Directly filtering on `hotel_bookings.hotel_id` allows high-volume queries (R04, R15, W05) to filter by hotel without joining `room_types`.
+- *Why kept:* Keeping hotel_id lets R15 join hotels directly on hotel_bookings.hotel_id without going through room_types; consistency is enforced by the composite FK.
 - *Relational Enforcement:* To prevent inconsistency, the schema enforces the composite foreign key:
   `FOREIGN KEY (room_type_id, hotel_id) REFERENCES room_types(room_type_id, hotel_id)`
   This guarantees that no row can ever link a room type from one hotel to a different hotel. Empirical query check reveals **0 mismatches**.
@@ -636,7 +641,7 @@ During data inspection and schema validation, five specific real-world anomalies
 ### 9.2 DP2: Duplicate Seat Assignments on Non-Cancelled Bookings (18,443 pairs)
 - **What it is:** 18,443 distinct `(flight_id, seat_no)` pairs are assigned to more than one passenger among active (non-cancelled) bookings.
 - **How found:** Aggregation joining `passengers`, `flight_bookings`, and `bookings` filtering for `status <> 'CANCELLED'` and grouping by `(flight_id, seat_no)` having `count(*) > 1`.
-- **Why this cannot be a UNIQUE constraint:** A unique index on `(flight_id, seat_no)` cannot be declared on `passengers` because `flight_id` resides on `flight_bookings`. Even a cross-table unique constraint would fail to load because historical production records already contain duplicate assignments (caused by upstream check-in race conditions).
+- **Why this cannot be a UNIQUE constraint:** A unique index on `(flight_id, seat_no)` cannot be declared on `passengers` because `flight_id` resides on `flight_bookings`. Even a cross-table unique constraint would fail to load because historical production records already contain duplicate assignments (assumption: likely caused by upstream check-in race conditions).
 - **Schema Handling:** Enforces valid seat formatting (`^[0-9]{1,2}[A-K]$`) while leaving seat conflict resolution to transactional concurrency controls in the check-in service.
 
 ### 9.3 DP3: Pre-Assigned Seat on Pending Payment Booking (1 occurrence)
