@@ -1,0 +1,31 @@
+query_id,type,avg_ms,median_ms,min_ms,max_ms,scan_nodes
+R01,READ,8.399,8.142,6.858,10.198,Seq Scan on flight_bookings | Seq Scan on flights | Index Scan using pk_bookings on bookings
+R02,READ,0.794,0.797,0.750,0.836,Seq Scan on flights
+R03,READ,0.212,0.209,0.202,0.224,Seq Scan on hotels
+R04,READ,2.071,2.023,2.020,2.170,Seq Scan on hotel_bookings | Index Scan using uq_room_types_id_hotel on room_types | Index Scan using pk_bookings on bookings
+R05,READ,5.871,5.812,5.775,6.026,Seq Scan on bookings | Index Scan using pk_flight_bookings on flight_bookings | Index Scan using pk_flights on flights | Index Scan using uq_hotel_bookings_booking_hotel on hotel_bookings
+R06,READ,0.030,0.028,0.028,0.033,Index Scan using uq_bookings_booking_ref on bookings
+R07,READ,2.146,2.117,2.075,2.246,Seq Scan on flight_bookings | Index Scan using pk_bookings on bookings | Index Scan using pk_passengers on passengers
+R08,READ,5.279,5.258,5.244,5.336,Seq Scan on flight_bookings | Bitmap Heap Scan on flights | Bitmap Index Scan on uq_flights_number_departure
+R09,READ,12.216,12.194,12.040,12.415,Seq Scan on flight_bookings | Seq Scan on bookings | Seq Scan on flights
+R10,READ,0.693,0.689,0.661,0.730,Seq Scan on flights
+R11,READ,4.869,4.883,4.703,5.020,Seq Scan on bookings
+R12,READ,26.540,26.479,26.471,26.670,Seq Scan on bookings
+R13,READ,11.659,11.611,11.505,11.861,Seq Scan on coupons | Seq Scan on bookings
+R14,READ,26.957,26.986,26.692,27.194,Seq Scan on bookings | Seq Scan on flight_bookings | Seq Scan on flights | Seq Scan on airlines
+R15,READ,14.205,14.093,13.972,14.551,Seq Scan on bookings | Seq Scan on hotel_bookings | Seq Scan on hotels
+R16,READ,60.403,60.644,59.775,60.789,Seq Scan on bookings | Seq Scan on customers | Seq Scan on flight_bookings | Seq Scan on flights | Seq Scan on hotel_bookings
+R17,READ,16.646,16.768,16.317,16.854,Seq Scan on bookings
+R18,READ,4.315,4.251,4.202,4.491,Seq Scan on hotel_reviews | Seq Scan on hotels
+R19,READ,1328.493,1332.184,1310.438,1342.858,Bitmap Heap Scan on flights | Bitmap Index Scan on uq_flights_number_departure | Seq Scan on flight_bookings | Index Only Scan using pk_passengers on passengers
+R20,READ,6.718,6.526,6.411,7.216,Seq Scan on bookings
+R21,READ,16.886,16.869,16.752,17.038,Seq Scan on passengers | Seq Scan on flight_bookings | Seq Scan on flights
+R22,READ,32.400,32.436,32.236,32.528,Seq Scan on bookings
+R23,READ,8.484,8.435,8.369,8.648,Seq Scan on customers
+R24,READ,1.529,1.514,1.489,1.583,Seq Scan on hotel_reviews | Seq Scan on hotels
+R25,READ,17.688,17.614,17.534,17.915,Seq Scan on flight_bookings | Seq Scan on bookings | Seq Scan on flights
+W01,WRITE,0.420,0.415,0.396,0.450,(no scan)
+W02,WRITE,9.370,9.346,9.258,9.505,Index Scan using pk_bookings on bookings
+W03,WRITE,0.187,0.187,0.185,0.188,Index Scan using uq_bookings_booking_ref on bookings
+W04,WRITE,0.995,1.002,0.954,1.028,Seq Scan on flights
+W05,WRITE,2.389,2.380,2.377,2.411,Seq Scan on hotel_bookings | Index Scan using pk_bookings on bookings
