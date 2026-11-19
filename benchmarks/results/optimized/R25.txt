@@ -1,0 +1,96 @@
+=== R25 run 1 ===
+Sort  (cost=5788.94..5812.63 rows=9476 width=32) (actual time=29.867..29.974 rows=2935.00 loops=1)
+  Sort Key: b.booked_at DESC
+  Sort Method: quicksort  Memory: 234kB
+  Buffers: shared hit=1184
+  ->  Hash Join  (cost=3376.55..5163.04 rows=9476 width=32) (actual time=18.872..29.416 rows=2935.00 loops=1)
+        Hash Cond: (fb.flight_id = f.flight_id)
+        Join Filter: ((f.departure_at - b.booked_at) < '24:00:00'::interval)
+        Rows Removed by Join Filter: 25282
+        Buffers: shared hit=1181
+        ->  Hash Join  (cost=2872.97..4584.83 rows=28427 width=20) (actual time=15.890..21.561 rows=28217.00 loops=1)
+              Hash Cond: (fb.booking_id = b.booking_id)
+              Buffers: shared hit=989
+              ->  Seq Scan on flight_bookings fb  (cost=0.00..1488.99 rows=84899 width=12) (actual time=0.003..3.989 rows=84899.00 loops=1)
+                    Buffers: shared hit=640
+              ->  Hash  (cost=2266.94..2266.94 rows=48482 width=16) (actual time=8.102..8.104 rows=48024.00 loops=1)
+                    Buckets: 65536  Batches: 1  Memory Usage: 2764kB
+                    Buffers: shared hit=349
+                    ->  Index Only Scan Backward using idx_bookings_booked_at_covering on bookings b  (cost=0.42..2266.94 rows=48482 width=16) (actual time=0.009..4.281 rows=48024.00 loops=1)
+                          Index Cond: (booked_at >= '2026-01-01 00:00:00+05:30'::timestamp with time zone)
+                          Heap Fetches: 0
+                          Index Searches: 1
+                          Buffers: shared hit=349
+        ->  Hash  (cost=330.48..330.48 rows=13848 width=20) (actual time=2.957..2.957 rows=13848.00 loops=1)
+              Buckets: 16384  Batches: 1  Memory Usage: 832kB
+              Buffers: shared hit=192
+              ->  Seq Scan on flights f  (cost=0.00..330.48 rows=13848 width=20) (actual time=0.005..1.429 rows=13848.00 loops=1)
+                    Buffers: shared hit=192
+Planning:
+  Buffers: shared hit=649
+Planning Time: 1.810 ms
+Execution Time: 30.156 ms
+=== R25 run 2 ===
+Sort  (cost=5788.94..5812.63 rows=9476 width=32) (actual time=29.360..29.476 rows=2935.00 loops=1)
+  Sort Key: b.booked_at DESC
+  Sort Method: quicksort  Memory: 234kB
+  Buffers: shared hit=1184
+  ->  Hash Join  (cost=3376.55..5163.04 rows=9476 width=32) (actual time=18.925..28.961 rows=2935.00 loops=1)
+        Hash Cond: (fb.flight_id = f.flight_id)
+        Join Filter: ((f.departure_at - b.booked_at) < '24:00:00'::interval)
+        Rows Removed by Join Filter: 25282
+        Buffers: shared hit=1181
+        ->  Hash Join  (cost=2872.97..4584.83 rows=28427 width=20) (actual time=16.066..21.527 rows=28217.00 loops=1)
+              Hash Cond: (fb.booking_id = b.booking_id)
+              Buffers: shared hit=989
+              ->  Seq Scan on flight_bookings fb  (cost=0.00..1488.99 rows=84899 width=12) (actual time=0.003..4.034 rows=84899.00 loops=1)
+                    Buffers: shared hit=640
+              ->  Hash  (cost=2266.94..2266.94 rows=48482 width=16) (actual time=8.343..8.347 rows=48024.00 loops=1)
+                    Buckets: 65536  Batches: 1  Memory Usage: 2764kB
+                    Buffers: shared hit=349
+                    ->  Index Only Scan Backward using idx_bookings_booked_at_covering on bookings b  (cost=0.42..2266.94 rows=48482 width=16) (actual time=0.011..4.636 rows=48024.00 loops=1)
+                          Index Cond: (booked_at >= '2026-01-01 00:00:00+05:30'::timestamp with time zone)
+                          Heap Fetches: 0
+                          Index Searches: 1
+                          Buffers: shared hit=349
+        ->  Hash  (cost=330.48..330.48 rows=13848 width=20) (actual time=2.831..2.832 rows=13848.00 loops=1)
+              Buckets: 16384  Batches: 1  Memory Usage: 832kB
+              Buffers: shared hit=192
+              ->  Seq Scan on flights f  (cost=0.00..330.48 rows=13848 width=20) (actual time=0.005..1.412 rows=13848.00 loops=1)
+                    Buffers: shared hit=192
+Planning:
+  Buffers: shared hit=649
+Planning Time: 1.574 ms
+Execution Time: 29.667 ms
+=== R25 run 3 ===
+Sort  (cost=5788.94..5812.63 rows=9476 width=32) (actual time=29.286..29.391 rows=2935.00 loops=1)
+  Sort Key: b.booked_at DESC
+  Sort Method: quicksort  Memory: 234kB
+  Buffers: shared hit=1184
+  ->  Hash Join  (cost=3376.55..5163.04 rows=9476 width=32) (actual time=18.946..28.854 rows=2935.00 loops=1)
+        Hash Cond: (fb.flight_id = f.flight_id)
+        Join Filter: ((f.departure_at - b.booked_at) < '24:00:00'::interval)
+        Rows Removed by Join Filter: 25282
+        Buffers: shared hit=1181
+        ->  Hash Join  (cost=2872.97..4584.83 rows=28427 width=20) (actual time=15.849..21.310 rows=28217.00 loops=1)
+              Hash Cond: (fb.booking_id = b.booking_id)
+              Buffers: shared hit=989
+              ->  Seq Scan on flight_bookings fb  (cost=0.00..1488.99 rows=84899 width=12) (actual time=0.003..3.929 rows=84899.00 loops=1)
+                    Buffers: shared hit=640
+              ->  Hash  (cost=2266.94..2266.94 rows=48482 width=16) (actual time=8.381..8.382 rows=48024.00 loops=1)
+                    Buckets: 65536  Batches: 1  Memory Usage: 2764kB
+                    Buffers: shared hit=349
+                    ->  Index Only Scan Backward using idx_bookings_booked_at_covering on bookings b  (cost=0.42..2266.94 rows=48482 width=16) (actual time=0.011..4.643 rows=48024.00 loops=1)
+                          Index Cond: (booked_at >= '2026-01-01 00:00:00+05:30'::timestamp with time zone)
+                          Heap Fetches: 0
+                          Index Searches: 1
+                          Buffers: shared hit=349
+        ->  Hash  (cost=330.48..330.48 rows=13848 width=20) (actual time=3.071..3.072 rows=13848.00 loops=1)
+              Buckets: 16384  Batches: 1  Memory Usage: 832kB
+              Buffers: shared hit=192
+              ->  Seq Scan on flights f  (cost=0.00..330.48 rows=13848 width=20) (actual time=0.005..1.501 rows=13848.00 loops=1)
+                    Buffers: shared hit=192
+Planning:
+  Buffers: shared hit=649
+Planning Time: 1.642 ms
+Execution Time: 29.577 ms

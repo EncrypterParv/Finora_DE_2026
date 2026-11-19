@@ -1,0 +1,54 @@
+=== W02 run 1 ===
+Update on bookings  (cost=14.39..22.41 rows=0 width=0) (actual time=0.838..0.839 rows=0.00 loops=1)
+  Buffers: shared hit=70 read=1 dirtied=3
+  InitPlan 1
+    ->  Aggregate  (cost=14.09..14.10 rows=1 width=8) (actual time=0.072..0.072 rows=1.00 loops=1)
+          Buffers: shared hit=5
+          ->  Index Only Scan using idx_bookings_pending_payment_booked_at on bookings bookings_1  (cost=0.14..13.81 rows=111 width=8) (actual time=0.041..0.061 rows=97.00 loops=1)
+                Heap Fetches: 67
+                Index Searches: 1
+                Buffers: shared hit=5
+  ->  Index Scan using pk_bookings on bookings  (cost=0.29..8.31 rows=1 width=56) (actual time=0.090..0.091 rows=1.00 loops=1)
+        Index Cond: (booking_id = (InitPlan 1).col1)
+        Index Searches: 1
+        Buffers: shared hit=8
+Planning:
+  Buffers: shared hit=237
+Planning Time: 0.666 ms
+Execution Time: 0.957 ms
+=== W02 run 2 ===
+Update on bookings  (cost=14.39..22.41 rows=0 width=0) (actual time=0.384..0.384 rows=0.00 loops=1)
+  Buffers: shared hit=73 dirtied=1
+  InitPlan 1
+    ->  Aggregate  (cost=14.09..14.10 rows=1 width=8) (actual time=0.070..0.071 rows=1.00 loops=1)
+          Buffers: shared hit=4
+          ->  Index Only Scan using idx_bookings_pending_payment_booked_at on bookings bookings_1  (cost=0.14..13.81 rows=111 width=8) (actual time=0.048..0.061 rows=97.00 loops=1)
+                Heap Fetches: 97
+                Index Searches: 1
+                Buffers: shared hit=4
+  ->  Index Scan using pk_bookings on bookings  (cost=0.29..8.31 rows=1 width=56) (actual time=0.087..0.088 rows=1.00 loops=1)
+        Index Cond: (booking_id = (InitPlan 1).col1)
+        Index Searches: 1
+        Buffers: shared hit=9
+Planning:
+  Buffers: shared hit=237
+Planning Time: 0.630 ms
+Execution Time: 0.473 ms
+=== W02 run 3 ===
+Update on bookings  (cost=14.39..22.41 rows=0 width=0) (actual time=0.402..0.402 rows=0.00 loops=1)
+  Buffers: shared hit=73 dirtied=1
+  InitPlan 1
+    ->  Aggregate  (cost=14.09..14.10 rows=1 width=8) (actual time=0.071..0.072 rows=1.00 loops=1)
+          Buffers: shared hit=4
+          ->  Index Only Scan using idx_bookings_pending_payment_booked_at on bookings bookings_1  (cost=0.14..13.81 rows=111 width=8) (actual time=0.049..0.062 rows=97.00 loops=1)
+                Heap Fetches: 97
+                Index Searches: 1
+                Buffers: shared hit=4
+  ->  Index Scan using pk_bookings on bookings  (cost=0.29..8.31 rows=1 width=56) (actual time=0.088..0.089 rows=1.00 loops=1)
+        Index Cond: (booking_id = (InitPlan 1).col1)
+        Index Searches: 1
+        Buffers: shared hit=9
+Planning:
+  Buffers: shared hit=237
+Planning Time: 0.673 ms
+Execution Time: 0.493 ms

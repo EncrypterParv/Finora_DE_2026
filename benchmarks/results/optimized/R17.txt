@@ -1,0 +1,63 @@
+=== R17 run 1 ===
+Sort  (cost=4327.21..4349.23 rows=8809 width=44) (actual time=26.442..26.551 rows=3072.00 loops=1)
+  Sort Key: (count(*)) DESC, (sum(total_amount)) DESC
+  Sort Method: quicksort  Memory: 223kB
+  Buffers: shared hit=991, temp read=26 written=49
+  ->  HashAggregate  (cost=3353.59..3750.01 rows=8809 width=44) (actual time=18.310..24.499 rows=3072.00 loops=1)
+        Group Key: customer_id
+        Filter: (count(*) >= 3)
+        Batches: 5  Memory Usage: 8241kB  Disk Usage: 240kB
+        Rows Removed by Filter: 21926
+        Buffers: shared hit=985, temp read=26 written=49
+        ->  Index Scan using idx_bookings_booked_at_covering on bookings b  (cost=0.42..3031.59 rows=42934 width=10) (actual time=0.012..7.765 rows=39372.00 loops=1)
+              Index Cond: (booked_at >= '2026-01-01 00:00:00+05:30'::timestamp with time zone)
+              Filter: ((status)::text = 'COMPLETED'::text)
+              Rows Removed by Filter: 8652
+              Index Searches: 1
+              Buffers: shared hit=985
+Planning:
+  Buffers: shared hit=289
+Planning Time: 0.718 ms
+Execution Time: 26.941 ms
+=== R17 run 2 ===
+Sort  (cost=4327.21..4349.23 rows=8809 width=44) (actual time=27.033..27.141 rows=3072.00 loops=1)
+  Sort Key: (count(*)) DESC, (sum(total_amount)) DESC
+  Sort Method: quicksort  Memory: 223kB
+  Buffers: shared hit=991, temp read=26 written=49
+  ->  HashAggregate  (cost=3353.59..3750.01 rows=8809 width=44) (actual time=18.712..25.082 rows=3072.00 loops=1)
+        Group Key: customer_id
+        Filter: (count(*) >= 3)
+        Batches: 5  Memory Usage: 8241kB  Disk Usage: 240kB
+        Rows Removed by Filter: 21926
+        Buffers: shared hit=985, temp read=26 written=49
+        ->  Index Scan using idx_bookings_booked_at_covering on bookings b  (cost=0.42..3031.59 rows=42934 width=10) (actual time=0.013..7.873 rows=39372.00 loops=1)
+              Index Cond: (booked_at >= '2026-01-01 00:00:00+05:30'::timestamp with time zone)
+              Filter: ((status)::text = 'COMPLETED'::text)
+              Rows Removed by Filter: 8652
+              Index Searches: 1
+              Buffers: shared hit=985
+Planning:
+  Buffers: shared hit=289
+Planning Time: 0.639 ms
+Execution Time: 27.524 ms
+=== R17 run 3 ===
+Sort  (cost=4327.21..4349.23 rows=8809 width=44) (actual time=29.550..29.659 rows=3072.00 loops=1)
+  Sort Key: (count(*)) DESC, (sum(total_amount)) DESC
+  Sort Method: quicksort  Memory: 223kB
+  Buffers: shared hit=991, temp read=26 written=49
+  ->  HashAggregate  (cost=3353.59..3750.01 rows=8809 width=44) (actual time=20.412..27.564 rows=3072.00 loops=1)
+        Group Key: customer_id
+        Filter: (count(*) >= 3)
+        Batches: 5  Memory Usage: 8241kB  Disk Usage: 240kB
+        Rows Removed by Filter: 21926
+        Buffers: shared hit=985, temp read=26 written=49
+        ->  Index Scan using idx_bookings_booked_at_covering on bookings b  (cost=0.42..3031.59 rows=42934 width=10) (actual time=0.013..7.946 rows=39372.00 loops=1)
+              Index Cond: (booked_at >= '2026-01-01 00:00:00+05:30'::timestamp with time zone)
+              Filter: ((status)::text = 'COMPLETED'::text)
+              Rows Removed by Filter: 8652
+              Index Searches: 1
+              Buffers: shared hit=985
+Planning:
+  Buffers: shared hit=289
+Planning Time: 0.668 ms
+Execution Time: 30.327 ms
