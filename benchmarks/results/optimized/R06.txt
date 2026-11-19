@@ -1,27 +1,27 @@
 === R06 run 1 ===
-Index Scan using uq_bookings_booking_ref on bookings  (cost=0.42..8.44 rows=1 width=42) (actual time=0.035..0.035 rows=1.00 loops=1)
+Index Scan using uq_bookings_booking_ref on bookings  (cost=0.42..8.44 rows=1 width=42) (actual time=0.034..0.045 rows=1.00 loops=1)
   Index Cond: (booking_ref = 'MMA7772F'::bpchar)
   Index Searches: 1
-  Buffers: shared hit=4
+  Buffers: shared hit=6 dirtied=2
 Planning:
   Buffers: shared hit=190
-Planning Time: 0.575 ms
-Execution Time: 0.072 ms
+Planning Time: 0.287 ms
+Execution Time: 0.064 ms
 === R06 run 2 ===
-Index Scan using uq_bookings_booking_ref on bookings  (cost=0.42..8.44 rows=1 width=42) (actual time=0.019..0.020 rows=1.00 loops=1)
+Index Scan using uq_bookings_booking_ref on bookings  (cost=0.42..8.44 rows=1 width=42) (actual time=0.011..0.011 rows=1.00 loops=1)
   Index Cond: (booking_ref = 'MMA7772F'::bpchar)
   Index Searches: 1
   Buffers: shared hit=4
 Planning:
   Buffers: shared hit=190
-Planning Time: 0.529 ms
-Execution Time: 0.054 ms
+Planning Time: 0.276 ms
+Execution Time: 0.030 ms
 === R06 run 3 ===
-Index Scan using uq_bookings_booking_ref on bookings  (cost=0.42..8.44 rows=1 width=42) (actual time=0.021..0.021 rows=1.00 loops=1)
+Index Scan using uq_bookings_booking_ref on bookings  (cost=0.42..8.44 rows=1 width=42) (actual time=0.011..0.011 rows=1.00 loops=1)
   Index Cond: (booking_ref = 'MMA7772F'::bpchar)
   Index Searches: 1
   Buffers: shared hit=4
 Planning:
   Buffers: shared hit=190
-Planning Time: 0.570 ms
-Execution Time: 0.058 ms
+Planning Time: 0.294 ms
+Execution Time: 0.030 ms

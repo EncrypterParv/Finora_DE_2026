@@ -2,43 +2,43 @@
 
 ## Method
 
-The official before results are `benchmarks/results/baseline/` from the same benchmark laptop recorded in `team.json`: Devansh Chauhan – Apple M4, 16 GB RAM, macOS 26.4.1. PostgreSQL version: PostgreSQL 18.6 (Postgres.app). The session timezone was Asia/Kolkata. The baseline used the schema and load with its 20 primary-key/unique indexes. The after run used the same schema and load plus `sql/05_indexes.sql`, with query blocks from `sql/06_optimized_queries.sql`. Both summaries record three runs per query; averages below are taken directly from the corresponding `summary.csv` files.
+The official before results are `benchmarks/results/baseline/` from the same benchmark laptop recorded in `team.json`: Devansh Chauhan – Apple M4, 16 GB RAM, macOS 26.4.1. PostgreSQL version: PostgreSQL 18.6 (Postgres.app). The session timezone was Asia/Kolkata. The baseline used the schema and load with its 20 primary-key/unique indexes. The after run used the same schema and load plus `sql/05_indexes.sql`, with query blocks from `sql/06_optimized_queries.sql`. Both summaries record three runs per query; averages below are taken directly from the corresponding `summary.csv` files. Runs were made on Battery Power (not mains) with Low Power Mode off; no other benchmark/workload was launched during the measurement. Queries untouched by any index or rewrite (R14, R15, R16, R21) were used as controls; optimized/baseline ratios: R14=1.0434, R15=1.0042, R16=0.9419, R21=0.9787; attempts: 1.
 
 ## Results
 
-| SQL Query | Before avg (ms) | After avg (ms) | Improvement % | What changed | Same result? |
-|---|---:|---:|---:|---|---|
-| R01 | 8.399 | 0.423 | 95.0% | idx_flight_bookings_flight, idx_flights_route_departure | Yes (proof §5) |
-| R02 | 0.794 | 0.198 | 75.1% | idx_flights_route_departure | Yes (proof §5) |
-| R03 | 0.212 | 0.501 | -136.3% | idx_hotels_city_star | Yes (query unchanged) |
-| R04 | 2.071 | 0.457 | 77.9% | idx_hotel_bookings_roomtype_checkin, idx_room_types_hotel | Yes (query unchanged) |
-| R05 | 5.871 | 0.247 | 95.8% | idx_bookings_customer_status | Yes (query unchanged) |
-| R06 | 0.030 | 0.061 | -103.3% | query unchanged | Yes (query unchanged) |
-| R07 | 2.146 | 0.656 | 69.4% | idx_flight_bookings_flight | Yes (query unchanged) |
-| R08 | 5.279 | 2.515 | 52.4% | idx_flight_bookings_flight, idx_flights_scheduled_departure | Yes (query unchanged) |
-| R09 | 12.216 | 16.907 | -38.4% | idx_bookings_booked_at_covering | Yes (query unchanged) |
-| R10 | 0.693 | 0.433 | 37.5% | idx_flights_delayed_departure | Yes (query unchanged) |
-| R11 | 4.869 | 0.519 | 89.3% | idx_bookings_pending_payment_booked_at | Yes (query unchanged) |
-| R12 | 26.540 | 28.215 | -6.3% | idx_bookings_booked_at_covering | Yes (proof §5) |
-| R13 | 11.659 | 1.031 | 91.2% | idx_bookings_coupon_code_nonnull | No — original was wrong; fixed (§6) |
-| R14 | 26.957 | 57.784 | -114.4% | query unchanged | Yes (query unchanged) |
-| R15 | 14.205 | 28.221 | -98.7% | query unchanged | Yes (query unchanged) |
-| R16 | 60.403 | 114.480 | -89.5% | query unchanged | Yes (query unchanged) |
-| R17 | 16.646 | 28.264 | -69.8% | idx_bookings_booked_at_covering | Yes (query unchanged) |
-| R18 | 4.315 | 2.874 | 33.4% | idx_hotel_reviews_text_trgm, idx_hotels_city_star | Yes (query unchanged) |
-| R19 | 1328.493 | 67.355 | 94.9% | rewrite (§4) | Yes (proof §5) |
-| R20 | 6.718 | 2.187 | 67.4% | idx_bookings_booked_at_covering | Yes (proof §5) |
-| R21 | 16.886 | 34.210 | -102.6% | query unchanged | Yes (query unchanged) |
-| R22 | 32.400 | 0.307 | 99.1% | idx_bookings_booked_at_covering | Yes (proof §5) |
-| R23 | 8.484 | 0.294 | 96.5% | idx_customers_email_lower | Yes (query unchanged) |
-| R24 | 1.529 | 3.131 | -104.8% | idx_hotels_city_star | Yes (query unchanged) |
-| R25 | 17.688 | 29.800 | -68.5% | idx_bookings_booked_at_covering | Yes (query unchanged) |
-| W01 | 0.420 | 1.228 | -192.4% | query unchanged | Yes (query unchanged) |
-| W02 | 9.370 | 0.641 | 93.2% | idx_bookings_pending_payment_booked_at | Yes (query unchanged) |
-| W03 | 0.187 | 0.711 | -280.2% | query unchanged | Yes (query unchanged) |
-| W04 | 0.995 | 2.594 | -160.7% | query unchanged | Yes (query unchanged) |
-| W05 | 2.389 | 5.557 | -132.6% | idx_hotel_bookings_checkin_unassigned | Yes (query unchanged) |
-| **Total of 30 averages** | **1628.864** | **431.801** | **73.5%** | — | — |
+| SQL Query | Before avg (ms) | After avg (ms) | Improvement % | What changed | Same result? | Plan changed? |
+|---|---:|---:|---:|---|---|---|
+| R01 | 8.399 | 0.283 | 96.6% | idx_flight_bookings_flight, idx_flights_route_departure | Yes (proof §5) | Yes |
+| R02 | 0.794 | 0.086 | 89.2% | idx_flights_route_departure | Yes (proof §5) | Yes |
+| R03 | 0.212 | 0.169 | 20.3% | idx_hotels_city_star | Yes (query unchanged) | Yes |
+| R04 | 2.071 | 0.136 | 93.4% | idx_hotel_bookings_roomtype_checkin, idx_room_types_hotel | Yes (query unchanged) | Yes |
+| R05 | 5.871 | 0.053 | 99.1% | idx_bookings_customer_status | Yes (query unchanged) | Yes |
+| R06 | 0.030 | 0.041 | -36.7% | query unchanged | Yes (query unchanged) | No (same plan) |
+| R07 | 2.146 | 0.296 | 86.2% | idx_flight_bookings_flight | Yes (query unchanged) | Yes |
+| R08 | 5.279 | 0.844 | 84.0% | idx_flight_bookings_flight, idx_flights_scheduled_departure | Yes (query unchanged) | Yes |
+| R09 | 12.216 | 7.506 | 38.6% | idx_bookings_booked_at_covering | Yes (query unchanged) | Yes |
+| R10 | 0.693 | 0.029 | 95.8% | idx_flights_delayed_departure | Yes (query unchanged) | Yes |
+| R11 | 4.869 | 0.023 | 99.5% | idx_bookings_pending_payment_booked_at | Yes (query unchanged) | Yes |
+| R12 | 26.540 | 10.443 | 60.7% | idx_bookings_booked_at_covering | Yes (proof §5) | Yes |
+| R13 | 11.659 | 0.084 | 99.3% | idx_bookings_coupon_code_nonnull | No — original was wrong; fixed (§6) | Yes |
+| R14 | 26.957 | 28.128 | -4.3% | query unchanged | Yes (query unchanged) | Yes |
+| R15 | 14.205 | 14.265 | -0.4% | query unchanged | Yes (query unchanged) | No (same plan) |
+| R16 | 60.403 | 56.895 | 5.8% | query unchanged | Yes (query unchanged) | Yes |
+| R17 | 16.646 | 16.157 | 2.9% | idx_bookings_booked_at_covering | Yes (query unchanged) | Yes |
+| R18 | 4.315 | 1.492 | 65.4% | idx_hotel_reviews_text_trgm, idx_hotels_city_star | Yes (query unchanged) | Yes |
+| R19 | 1328.493 | 33.073 | 97.5% | rewrite (§4) | Yes (proof §5) | Yes |
+| R20 | 6.718 | 1.131 | 83.2% | idx_bookings_booked_at_covering | Yes (proof §5) | Yes |
+| R21 | 16.886 | 16.527 | 2.1% | query unchanged | Yes (query unchanged) | Yes |
+| R22 | 32.400 | 0.039 | 99.9% | idx_bookings_booked_at_covering | Yes (proof §5) | Yes |
+| R23 | 8.484 | 0.026 | 99.7% | idx_customers_email_lower | Yes (query unchanged) | Yes |
+| R24 | 1.529 | 0.794 | 48.1% | idx_hotel_reviews_hotel_rating, idx_hotels_city_star | Yes (query unchanged) | Yes |
+| R25 | 17.688 | 14.515 | 17.9% | idx_bookings_booked_at_covering | Yes (query unchanged) | Yes |
+| W01 | 0.420 | 0.924 | -120.0% | query unchanged | Yes (query unchanged) | Yes |
+| W02 | 9.370 | 0.421 | 95.5% | idx_bookings_pending_payment_booked_at | Yes (query unchanged) | Yes |
+| W03 | 0.187 | 0.213 | -13.9% | query unchanged | Yes (query unchanged) | Yes |
+| W04 | 0.995 | 1.221 | -22.7% | query unchanged | Yes (query unchanged) | Yes |
+| W05 | 2.389 | 1.265 | 47.0% | idx_hotel_bookings_checkin_unassigned | Yes (query unchanged) | Yes |
+| **Total of 30 averages** | **1628.864** | **207.079** | **87.3%** | — | — | — |
 
 ## Indexes
 
@@ -72,9 +72,9 @@ All `CREATE INDEX` statements in `sql/05_indexes.sql` are listed below. The defi
 | `coupons` | 8192 bytes |
 | `customers` | 4224 kB |
 | `flight_bookings` | 5120 kB |
-| `flights` | 1536 kB |
+| `flights` | 1272 kB |
 | `hotel_bookings` | 3584 kB |
-| `hotel_reviews` | 1728 kB |
+| `hotel_reviews` | 1520 kB |
 | `hotels` | 576 kB |
 | `passengers` | 10 MB |
 | `room_types` | 520 kB |
@@ -286,7 +286,11 @@ Proofs were run against `mmt_proof`, loaded from the schema and seed data withou
 | R20 | 30 | 30 | 0 | 0 | Yes |
 | R22 | 25 | 25 | 0 | 0 | Yes |
 
-All equivalent rewrites have zero rows in each `EXCEPT ALL` direction and matching ordered hashes. R13 is intentionally a wrong-result correction: the original returns zero rows and the `NOT EXISTS` rewrite returns ten unused coupons. NULL values in `bookings.coupon_code` make `NOT IN` evaluate to UNKNOWN for otherwise unmatched coupon codes.
+All equivalent rewrites have zero rows in each `EXCEPT ALL` direction and matching ordered hashes.
+
+### R13: wrong-result correction
+
+R13 is intentionally a wrong-result correction: the original returns zero rows and the `NOT EXISTS` rewrite returns ten unused coupons. NULL values in `bookings.coupon_code` make `NOT IN` evaluate to UNKNOWN for otherwise unmatched coupon codes.
 
 Unused coupons from the proof output:
 
@@ -305,7 +309,7 @@ Unused coupons from the proof output:
 
 These are ranked by baseline average minus optimized average. The plan excerpts are from run 3 of each raw plan file.
 
-### R19: 1261.138 ms saved per run on average
+### R19: 1295.420 ms saved per run on average
 
 **Baseline plan (run 3)**
 
@@ -321,14 +325,14 @@ Execution Time: 1342.858 ms
 **Optimized plan (run 3)**
 
 ```text
-->  Seq Scan on passengers p  (cost=0.00..2913.80 rows=163380 width=8) (actual time=0.006..8.055 rows=163380.00 loops=1)
-->  Seq Scan on flight_bookings fb  (cost=0.00..1488.99 rows=84899 width=12) (actual time=0.005..5.967 rows=84899.00 loops=1)
-->  Bitmap Heap Scan on flights f  (cost=102.55..305.32 rows=718 width=19) (actual time=0.199..0.277 rows=720.00 loops=1)
-->  Bitmap Index Scan on uq_flights_number_departure  (cost=0.00..102.38 rows=718 width=0) (actual time=0.190..0.192 rows=720.00 loops=1)
-Execution Time: 72.426 ms
+->  Seq Scan on passengers p  (cost=0.00..2913.80 rows=163380 width=8) (actual time=0.003..3.901 rows=163380.00 loops=1)
+->  Seq Scan on flight_bookings fb  (cost=0.00..1488.99 rows=84899 width=12) (actual time=0.002..2.842 rows=84899.00 loops=1)
+->  Bitmap Heap Scan on flights f  (cost=102.55..272.32 rows=718 width=19) (actual time=0.104..0.143 rows=720.00 loops=1)
+->  Bitmap Index Scan on uq_flights_number_departure  (cost=0.00..102.38 rows=718 width=0) (actual time=0.099..0.101 rows=730.00 loops=1)
+Execution Time: 32.129 ms
 ```
 
-### R22: 32.093 ms saved per run on average
+### R22: 32.361 ms saved per run on average
 
 **Baseline plan (run 3)**
 
@@ -340,12 +344,30 @@ Execution Time: 32.236 ms
 **Optimized plan (run 3)**
 
 ```text
-->  Index Scan Backward using idx_bookings_booked_at_covering on bookings  (cost=0.42..2873.86 rows=44171 width=47) (actual time=0.016..0.020 rows=26.00 loops=1)
+->  Index Scan Backward using idx_bookings_booked_at_covering on bookings  (cost=0.42..2873.86 rows=44171 width=47) (actual time=0.007..0.009 rows=26.00 loops=1)
 Rows Removed by Filter: 1
-Execution Time: 0.077 ms
+Execution Time: 0.037 ms
 ```
 
-### R13: 10.628 ms saved per run on average
+### R12: 16.097 ms saved per run on average
+
+**Baseline plan (run 3)**
+
+```text
+->  Seq Scan on bookings  (cost=0.00..4471.53 rows=666 width=20) (actual time=1.108..20.668 rows=44275.00 loops=1)
+Rows Removed by Filter: 100517
+Execution Time: 26.479 ms
+```
+
+**Optimized plan (run 3)**
+
+```text
+->  Index Only Scan using idx_bookings_booked_at_covering on bookings  (cost=0.42..2620.83 rows=44590 width=20) (actual time=0.007..4.474 rows=44275.00 loops=1)
+Rows Removed by Filter: 3749
+Execution Time: 10.316 ms
+```
+
+### R13: 11.575 ms saved per run on average
 
 **Baseline plan (run 3)**
 
@@ -359,12 +381,12 @@ Execution Time: 11.505 ms
 **Optimized plan (run 3)**
 
 ```text
-->  Seq Scan on coupons c  (cost=0.00..1.30 rows=30 width=17) (actual time=0.005..0.007 rows=30.00 loops=1)
-->  Index Only Scan using idx_bookings_coupon_code_nonnull on bookings b  (cost=0.29..22.36 rows=896 width=10) (actual time=0.004..0.004 rows=0.67 loops=30)
-Execution Time: 0.162 ms
+->  Seq Scan on coupons c  (cost=0.00..1.30 rows=30 width=17) (actual time=0.002..0.003 rows=30.00 loops=1)
+->  Index Only Scan using idx_bookings_coupon_code_nonnull on bookings b  (cost=0.29..22.36 rows=896 width=10) (actual time=0.002..0.002 rows=0.67 loops=30)
+Execution Time: 0.076 ms
 ```
 
-### W02: 8.729 ms saved per run on average
+### W02: 8.949 ms saved per run on average
 
 **Baseline plan (run 3)**
 
@@ -378,58 +400,35 @@ Execution Time: 9.346 ms
 **Optimized plan (run 3)**
 
 ```text
-->  Index Only Scan using idx_bookings_pending_payment_booked_at on bookings bookings_1  (cost=0.14..13.81 rows=111 width=8) (actual time=0.049..0.062 rows=97.00 loops=1)
-->  Index Scan using pk_bookings on bookings  (cost=0.29..8.31 rows=1 width=56) (actual time=0.088..0.089 rows=1.00 loops=1)
-Execution Time: 0.493 ms
-```
-
-### R23: 8.190 ms saved per run on average
-
-**Baseline plan (run 3)**
-
-```text
-Seq Scan on customers  (cost=0.00..1128.00 rows=200 width=22) (actual time=0.224..8.421 rows=1.00 loops=1)
-Rows Removed by Filter: 39999
-Execution Time: 8.435 ms
-```
-
-**Optimized plan (run 3)**
-
-```text
-Index Scan using idx_customers_email_lower on customers  (cost=0.41..8.43 rows=1 width=21) (actual time=0.013..0.013 rows=1.00 loops=1)
-Execution Time: 0.041 ms
+->  Index Only Scan using idx_bookings_pending_payment_booked_at on bookings bookings_1  (cost=0.14..13.81 rows=111 width=8) (actual time=0.025..0.032 rows=97.00 loops=1)
+->  Index Scan using pk_bookings on bookings  (cost=0.29..8.31 rows=1 width=56) (actual time=0.045..0.046 rows=1.00 loops=1)
+Execution Time: 0.406 ms
 ```
 
 ## Write overhead
 
 | Write query | Before avg (ms) | After avg (ms) | Change % | New indexes maintained |
 |---|---:|---:|---:|---|
-| W01 | 0.420 | 1.228 | 192.4% | idx_bookings_booked_at_covering, idx_bookings_customer_status, idx_bookings_pending_payment_booked_at |
-| W02 | 9.370 | 0.641 | -93.2% | idx_bookings_booked_at_covering, idx_bookings_customer_status, idx_bookings_pending_payment_booked_at |
-| W03 | 0.187 | 0.711 | 280.2% | idx_bookings_booked_at_covering, idx_bookings_customer_status, idx_bookings_pending_payment_booked_at |
-| W04 | 0.995 | 2.594 | 160.7% | idx_flights_delayed_departure, idx_flights_scheduled_departure |
-| W05 | 2.389 | 5.557 | 132.6% | idx_hotel_bookings_checkin_unassigned (updated rows leave partial index) |
+| W01 | 0.420 | 0.924 | 120.0% | idx_bookings_booked_at_covering, idx_bookings_customer_status, idx_bookings_pending_payment_booked_at |
+| W02 | 9.370 | 0.421 | -95.5% | idx_bookings_booked_at_covering, idx_bookings_customer_status, idx_bookings_pending_payment_booked_at |
+| W03 | 0.187 | 0.213 | 13.9% | idx_bookings_booked_at_covering, idx_bookings_customer_status, idx_bookings_pending_payment_booked_at |
+| W04 | 0.995 | 1.221 | 22.7% | idx_flights_delayed_departure, idx_flights_scheduled_departure |
+| W05 | 2.389 | 1.265 | -47.0% | idx_hotel_bookings_checkin_unassigned (updated rows leave partial index) |
 
 Index write effects follow the comments in `sql/05_indexes.sql`: booked-at/customer/pending indexes are maintained by relevant booking writes; delayed/scheduled flight partial indexes change with W04 status updates; W05 updates leave its unassigned partial index. The customer email and hotel review indexes are untouched by workload writes.
 
 ## Not improved
 
-Every query whose optimized average is at least the baseline average, or whose improvement is below 10%, appears here. Reasons are grounded in the recorded optimized scan nodes.
+Every query whose optimized average is at least the baseline average, or whose improvement is below 10%, appears here. When the scan nodes and top-level shared-hit count match, the runtime difference is attributed to run-to-run variation.
 
-| Query | Before avg (ms) | After avg (ms) | Improvement % | Plan-based reason |
-|---|---:|---:|---:|---|
-| R03 | 0.212 | 0.501 | -136.3% | Bitmap Heap Scan on hotels; Bitmap Index Scan on idx_hotels_city_star |
-| R06 | 0.030 | 0.061 | -103.3% | Index Scan using uq_bookings_booking_ref on bookings |
-| R09 | 12.216 | 16.907 | -38.4% | Seq Scan on flight_bookings; Index Only Scan using idx_bookings_booked_at_covering on bookings; Seq Scan on flights |
-| R12 | 26.540 | 28.215 | -6.3% | Index Only Scan using idx_bookings_booked_at_covering on bookings |
-| R14 | 26.957 | 57.784 | -114.4% | Seq Scan on bookings; Seq Scan on flight_bookings; Seq Scan on flights; Seq Scan on airlines |
-| R15 | 14.205 | 28.221 | -98.7% | Seq Scan on bookings; Seq Scan on hotel_bookings; Seq Scan on hotels |
-| R16 | 60.403 | 114.480 | -89.5% | Seq Scan on bookings; Seq Scan on customers; Seq Scan on flight_bookings; Seq Scan on flights; Seq Scan on hotel_bookings |
-| R17 | 16.646 | 28.264 | -69.8% | Index Scan using idx_bookings_booked_at_covering on bookings |
-| R21 | 16.886 | 34.210 | -102.6% | Seq Scan on passengers; Seq Scan on flight_bookings; Seq Scan on flights |
-| R24 | 1.529 | 3.131 | -104.8% | Seq Scan on hotel_reviews; Bitmap Heap Scan on hotels; Bitmap Index Scan on idx_hotels_city_star |
-| R25 | 17.688 | 29.800 | -68.5% | Seq Scan on flight_bookings; Index Only Scan using idx_bookings_booked_at_covering on bookings; Seq Scan on flights |
-| W01 | 0.420 | 1.228 | -192.4% | (no scan) |
-| W03 | 0.187 | 0.711 | -280.2% | Index Scan using uq_bookings_booking_ref on bookings |
-| W04 | 0.995 | 2.594 | -160.7% | Seq Scan on flights |
-| W05 | 2.389 | 5.557 | -132.6% | Index Scan using idx_hotel_bookings_checkin_unassigned on hotel_bookings; Index Scan using pk_bookings on bookings |
+| Query | Before avg (ms) | After avg (ms) | Improvement % | Plan changed? | Plan-based reason |
+|---|---:|---:|---:|---|---|
+| R06 | 0.030 | 0.041 | -36.7% | No (same plan) | same plan as baseline; difference is run-to-run variation, not caused by the optimization |
+| R14 | 26.957 | 28.128 | -4.3% | Yes | Seq Scan on bookings; Seq Scan on flight_bookings; Seq Scan on flights; Seq Scan on airlines |
+| R15 | 14.205 | 14.265 | -0.4% | No (same plan) | same plan as baseline; difference is run-to-run variation, not caused by the optimization |
+| R16 | 60.403 | 56.895 | 5.8% | Yes | Seq Scan on bookings; Seq Scan on customers; Seq Scan on flight_bookings; Seq Scan on flights; Seq Scan on hotel_bookings |
+| R17 | 16.646 | 16.157 | 2.9% | Yes | Index Scan using idx_bookings_booked_at_covering on bookings |
+| R21 | 16.886 | 16.527 | 2.1% | Yes | Seq Scan on passengers; Seq Scan on flight_bookings; Seq Scan on flights |
+| W01 | 0.420 | 0.924 | -120.0% | Yes | (no scan) |
+| W03 | 0.187 | 0.213 | -13.9% | Yes | Index Scan using uq_bookings_booking_ref on bookings |
+| W04 | 0.995 | 1.221 | -22.7% | Yes | Seq Scan on flights |
