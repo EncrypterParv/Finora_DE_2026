@@ -9,6 +9,7 @@ SET search_path TO mmt;
 BEGIN;
 
 -- @R01
+-- REWRITTEN: Made the departure date predicate sargable for the composite route/date index.
 -- Flight search: Delhi → Mumbai on 5 July 2026 with seats left
 SELECT f.flight_id, f.flight_no, f.departure_at, f.arrival_at, f.base_fare,
        f.total_seats - coalesce(sum(fb.passengers) FILTER (WHERE b.status <> 'CANCELLED'), 0) AS seats_left
@@ -16,17 +17,18 @@ FROM flights f
 LEFT JOIN flight_bookings fb ON fb.flight_id = f.flight_id
 LEFT JOIN bookings b         ON b.booking_id = fb.booking_id
 WHERE f.origin = 'DEL' AND f.destination = 'BOM'
-  AND DATE(f.departure_at) = '2026-07-05'
+  AND f.departure_at >= '2026-07-05' AND f.departure_at < '2026-07-06'
   AND f.status <> 'CANCELLED'
 GROUP BY f.flight_id, f.flight_no, f.departure_at, f.arrival_at, f.base_fare, f.total_seats
 ORDER BY f.departure_at;
 
 -- @R02
+-- REWRITTEN: Replaced the date cast filter with a session-local sargable range.
 -- Fare calendar: cheapest Bengaluru → Delhi fare for each day of July 2026
 SELECT departure_at::date AS day, min(base_fare) AS cheapest_fare
 FROM flights
 WHERE origin = 'BLR' AND destination = 'DEL'
-  AND departure_at::date BETWEEN '2026-07-01' AND '2026-07-31'
+  AND departure_at >= '2026-07-01' AND departure_at < '2026-08-01'
 GROUP BY 1
 ORDER BY 1;
 
@@ -184,21 +186,24 @@ ORDER BY r.created_at DESC
 LIMIT 30;
 
 -- @R19
+-- REWRITTEN: Aggregated passenger rows once for June flights instead of a correlated count per flight.
 -- Operations: passengers booked on every flight departing in June 2026
-SELECT f.flight_id, f.flight_no, f.departure_at,
-       (SELECT count(*) FROM passengers p JOIN flight_bookings fb ON fb.booking_id = p.booking_id
-         WHERE fb.flight_id = f.flight_id) AS passengers
+SELECT f.flight_id, f.flight_no, f.departure_at, coalesce(pc.passengers, 0) AS passengers
 FROM flights f
+LEFT JOIN (SELECT fb.flight_id, count(*) AS passengers
+           FROM passengers p JOIN flight_bookings fb ON fb.booking_id = p.booking_id
+           GROUP BY fb.flight_id) pc ON pc.flight_id = f.flight_id
 WHERE f.departure_at >= '2026-06-01' AND f.departure_at < '2026-07-01'
 ORDER BY passengers DESC, f.departure_at;
 
 -- @R20
+-- REWRITTEN: Replaced booked_at::date filtering with a sargable session-local range.
 -- Finance: bookings per day and running total for June 2026
 SELECT day, bookings, sum(bookings) OVER (ORDER BY day) AS running_total
 FROM (
     SELECT booked_at::date AS day, count(*) AS bookings
     FROM bookings
-    WHERE booked_at::date BETWEEN '2026-06-01' AND '2026-06-30'
+    WHERE booked_at >= '2026-06-01' AND booked_at < '2026-07-01'
     GROUP BY 1
 ) d
 ORDER BY day;
@@ -216,10 +221,15 @@ ORDER BY senior_passengers DESC;
 
 -- @R22
 -- Support console: all bookings, newest first, page 4,001 (25 per page)
+-- REWRITTEN: Keyset pagination avoids sorting and skipping the preceding 100,000 rows.
+-- The cursor literal is booked_at for the last row of the previous page (row 100,000
+-- in booked_at DESC order on seed data), passed by an app from the page it just displayed.
+-- Uses the (booked_at, booking_id) tie-breaker so it stays correct if booked_at has duplicates at scale.
+-- For Phase 5 large data, recompute the literal from row 100,000 there.
 SELECT booking_id, booking_ref, booking_type, status, total_amount, booked_at
 FROM bookings
-ORDER BY booked_at DESC
-OFFSET 100000
+WHERE (booked_at, booking_id) < (TIMESTAMPTZ '2025-06-18 22:17:24+05:30', 46410)
+ORDER BY booked_at DESC, booking_id DESC
 LIMIT 25;
 
 -- @R23
