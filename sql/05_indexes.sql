@@ -1,6 +1,7 @@
 -- Phase 4 indexes. Run ONLY on the optimized database, never on the baseline DB.
 -- Tested with EXPLAIN (ANALYZE, BUFFERS) on mmt_tarunya; exploration timings are not official benchmark results.
 SET search_path TO mmt;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 -- R09 and rewritten R12: covering B-tree on the shared booked_at range key.
 -- booked_at leads because both queries constrain a time range; INCLUDE covers R09's booking_id join
@@ -36,8 +37,41 @@ CREATE INDEX IF NOT EXISTS idx_bookings_coupon_code_nonnull
 -- aggregate; both tested R15 date indexes were ineffective or slower end-to-end. Do not keep those
 -- candidates alongside other owners' future indexes without retesting and duplicate review.
 
--- Indexes requested by Parv (R01–R08, R16–R22)
--- TODO: Add only Parv's owner-tested indexes. Check for exact duplicates and key-prefix duplicates.
+-- Parv's tested requests (R01–R08, R16–R22).
+-- R01/R02 need the sargable departure_at range rewrites in 06_optimized_queries.sql;
+-- the original DATE()/::date predicates do not use departure_at as a B-tree range condition.
+
+-- R01/R02: route equality followed by the departure range; also supports both route lookups.
+CREATE INDEX IF NOT EXISTS idx_flights_route_departure
+    ON flights USING btree (origin, destination, departure_at);
+
+-- R01/R07/R08: flight join key with passengers covered for per-flight sums.
+CREATE INDEX IF NOT EXISTS idx_flight_bookings_flight
+    ON flight_bookings USING btree (flight_id) INCLUDE (passengers);
+
+-- R03/R18: city equality, then star-rating range; city alone is the leftmost prefix for R18.
+CREATE INDEX IF NOT EXISTS idx_hotels_city_star
+    ON hotels USING btree (city_name, star_rating);
+
+-- R04: hotel_id is not the leftmost key of uq_room_types_id_hotel (room_type_id, hotel_id).
+CREATE INDEX IF NOT EXISTS idx_room_types_hotel
+    ON room_types USING btree (hotel_id);
+
+-- R04: room-type equality then check-in range; included columns cover overlap and room aggregation.
+CREATE INDEX IF NOT EXISTS idx_hotel_bookings_roomtype_checkin
+    ON hotel_bookings USING btree (room_type_id, check_in) INCLUDE (check_out, rooms);
+
+-- R05: customer/status equality lookup; customer_id leads as the more selective condition.
+CREATE INDEX IF NOT EXISTS idx_bookings_customer_status
+    ON bookings USING btree (customer_id, status);
+
+-- R08: scheduled-flight subset ordered by departure; predicate is copied from the query.
+CREATE INDEX IF NOT EXISTS idx_flights_scheduled_departure
+    ON flights USING btree (departure_at) WHERE status = 'SCHEDULED';
+
+-- R18: GIN trigrams support the leading-wildcard ILIKE substring search.
+CREATE INDEX IF NOT EXISTS idx_hotel_reviews_text_trgm
+    ON hotel_reviews USING gin (review_text gin_trgm_ops);
 
 -- Indexes requested by Yash (R23–R25, W01–W05)
 -- TODO: Add only Yash's owner-tested indexes. Check for exact duplicates and key-prefix duplicates.
@@ -50,3 +84,5 @@ ANALYZE;
 -- W03 may remove a row if its target was pending before cancellation.
 -- idx_bookings_coupon_code_nonnull: none of W01–W05 changes coupon_code; W01's NULL coupon is excluded,
 -- while W02/W03 only change status. W05 updates room_number, not an indexed column (no R15 index retained).
+-- Parv's indexes: W01 inserts into idx_bookings_customer_status; W02/W03 change status in that index.
+-- W04 may remove rows from idx_flights_scheduled_departure; W05 changes no Parv-indexed column.
