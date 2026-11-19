@@ -1,0 +1,42 @@
+=== R13 run 1 ===
+Nested Loop Anti Join  (cost=0.29..11.55 rows=10 width=17) (actual time=0.028..0.081 rows=10.00 loops=1)
+  Buffers: shared hit=62
+  ->  Seq Scan on coupons c  (cost=0.00..1.30 rows=30 width=17) (actual time=0.002..0.003 rows=30.00 loops=1)
+        Buffers: shared hit=1
+  ->  Index Only Scan using idx_bookings_coupon_code_nonnull on bookings b  (cost=0.29..22.36 rows=896 width=10) (actual time=0.002..0.002 rows=0.67 loops=30)
+        Index Cond: (coupon_code = (c.coupon_code)::text)
+        Heap Fetches: 0
+        Index Searches: 30
+        Buffers: shared hit=61
+Planning:
+  Buffers: shared hit=357
+Planning Time: 0.464 ms
+Execution Time: 0.098 ms
+=== R13 run 2 ===
+Nested Loop Anti Join  (cost=0.29..11.55 rows=10 width=17) (actual time=0.025..0.061 rows=10.00 loops=1)
+  Buffers: shared hit=62
+  ->  Seq Scan on coupons c  (cost=0.00..1.30 rows=30 width=17) (actual time=0.003..0.003 rows=30.00 loops=1)
+        Buffers: shared hit=1
+  ->  Index Only Scan using idx_bookings_coupon_code_nonnull on bookings b  (cost=0.29..22.36 rows=896 width=10) (actual time=0.002..0.002 rows=0.67 loops=30)
+        Index Cond: (coupon_code = (c.coupon_code)::text)
+        Heap Fetches: 0
+        Index Searches: 30
+        Buffers: shared hit=61
+Planning:
+  Buffers: shared hit=357
+Planning Time: 0.413 ms
+Execution Time: 0.077 ms
+=== R13 run 3 ===
+Nested Loop Anti Join  (cost=0.29..11.55 rows=10 width=17) (actual time=0.025..0.060 rows=10.00 loops=1)
+  Buffers: shared hit=62
+  ->  Seq Scan on coupons c  (cost=0.00..1.30 rows=30 width=17) (actual time=0.002..0.003 rows=30.00 loops=1)
+        Buffers: shared hit=1
+  ->  Index Only Scan using idx_bookings_coupon_code_nonnull on bookings b  (cost=0.29..22.36 rows=896 width=10) (actual time=0.002..0.002 rows=0.67 loops=30)
+        Index Cond: (coupon_code = (c.coupon_code)::text)
+        Heap Fetches: 0
+        Index Searches: 30
+        Buffers: shared hit=61
+Planning:
+  Buffers: shared hit=357
+Planning Time: 0.417 ms
+Execution Time: 0.076 ms

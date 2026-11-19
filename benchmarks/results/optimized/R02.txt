@@ -1,0 +1,60 @@
+=== R02 run 1 ===
+GroupAggregate  (cost=76.14..76.66 rows=26 width=36) (actual time=0.076..0.081 rows=31.00 loops=1)
+  Group Key: ((departure_at)::date)
+  Buffers: shared hit=15 dirtied=1
+  ->  Sort  (cost=76.14..76.20 rows=26 width=9) (actual time=0.063..0.064 rows=31.00 loops=1)
+        Sort Key: ((departure_at)::date)
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=15 dirtied=1
+        ->  Bitmap Heap Scan on flights  (cost=4.68..75.53 rows=26 width=9) (actual time=0.037..0.053 rows=31.00 loops=1)
+              Recheck Cond: ((origin = 'BLR'::bpchar) AND (destination = 'DEL'::bpchar) AND (departure_at >= '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (departure_at < '2026-08-01 00:00:00+05:30'::timestamp with time zone))
+              Heap Blocks: exact=10
+              Buffers: shared hit=12 dirtied=1
+              ->  Bitmap Index Scan on idx_flights_route_departure  (cost=0.00..4.67 rows=26 width=0) (actual time=0.014..0.014 rows=31.00 loops=1)
+                    Index Cond: ((origin = 'BLR'::bpchar) AND (destination = 'DEL'::bpchar) AND (departure_at >= '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (departure_at < '2026-08-01 00:00:00+05:30'::timestamp with time zone))
+                    Index Searches: 1
+                    Buffers: shared hit=2
+Planning:
+  Buffers: shared hit=231
+Planning Time: 0.393 ms
+Execution Time: 0.112 ms
+=== R02 run 2 ===
+GroupAggregate  (cost=76.14..76.66 rows=26 width=36) (actual time=0.040..0.045 rows=31.00 loops=1)
+  Group Key: ((departure_at)::date)
+  Buffers: shared hit=15
+  ->  Sort  (cost=76.14..76.20 rows=26 width=9) (actual time=0.037..0.038 rows=31.00 loops=1)
+        Sort Key: ((departure_at)::date)
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=15
+        ->  Bitmap Heap Scan on flights  (cost=4.68..75.53 rows=26 width=9) (actual time=0.015..0.027 rows=31.00 loops=1)
+              Recheck Cond: ((origin = 'BLR'::bpchar) AND (destination = 'DEL'::bpchar) AND (departure_at >= '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (departure_at < '2026-08-01 00:00:00+05:30'::timestamp with time zone))
+              Heap Blocks: exact=10
+              Buffers: shared hit=12
+              ->  Bitmap Index Scan on idx_flights_route_departure  (cost=0.00..4.67 rows=26 width=0) (actual time=0.011..0.011 rows=31.00 loops=1)
+                    Index Cond: ((origin = 'BLR'::bpchar) AND (destination = 'DEL'::bpchar) AND (departure_at >= '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (departure_at < '2026-08-01 00:00:00+05:30'::timestamp with time zone))
+                    Index Searches: 1
+                    Buffers: shared hit=2
+Planning:
+  Buffers: shared hit=231
+Planning Time: 0.358 ms
+Execution Time: 0.074 ms
+=== R02 run 3 ===
+GroupAggregate  (cost=76.14..76.66 rows=26 width=36) (actual time=0.039..0.044 rows=31.00 loops=1)
+  Group Key: ((departure_at)::date)
+  Buffers: shared hit=15
+  ->  Sort  (cost=76.14..76.20 rows=26 width=9) (actual time=0.036..0.037 rows=31.00 loops=1)
+        Sort Key: ((departure_at)::date)
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=15
+        ->  Bitmap Heap Scan on flights  (cost=4.68..75.53 rows=26 width=9) (actual time=0.015..0.026 rows=31.00 loops=1)
+              Recheck Cond: ((origin = 'BLR'::bpchar) AND (destination = 'DEL'::bpchar) AND (departure_at >= '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (departure_at < '2026-08-01 00:00:00+05:30'::timestamp with time zone))
+              Heap Blocks: exact=10
+              Buffers: shared hit=12
+              ->  Bitmap Index Scan on idx_flights_route_departure  (cost=0.00..4.67 rows=26 width=0) (actual time=0.010..0.010 rows=31.00 loops=1)
+                    Index Cond: ((origin = 'BLR'::bpchar) AND (destination = 'DEL'::bpchar) AND (departure_at >= '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (departure_at < '2026-08-01 00:00:00+05:30'::timestamp with time zone))
+                    Index Searches: 1
+                    Buffers: shared hit=2
+Planning:
+  Buffers: shared hit=231
+Planning Time: 0.346 ms
+Execution Time: 0.073 ms

@@ -117,19 +117,21 @@ WHERE status = 'PENDING_PAYMENT'
 ORDER BY booked_at;
 
 -- @R12
+-- REWRITTEN (Tarunya): EXTRACT(YEAR FROM booked_at) replaced by a half-open booked_at range so the booked_at index can be used; date_trunc kept for grouping/output.
 -- Finance: revenue per booking type per month in 2026 (excluding cancellations)
 SELECT date_trunc('month', booked_at) AS month, booking_type, count(*) AS bookings, sum(total_amount) AS revenue
 FROM bookings
 WHERE status <> 'CANCELLED'
-  AND EXTRACT(YEAR FROM booked_at) = 2026
+  AND booked_at >= '2026-01-01' AND booked_at < '2027-01-01'
 GROUP BY 1, 2
 ORDER BY 1, 2;
 
 -- @R13
+-- REWRITTEN (Tarunya): NOT IN returned 0 rows because bookings.coupon_code contains NULLs (x NOT IN (..., NULL) is never TRUE). NOT EXISTS returns the 10 unused coupons — an intended correction of a wrong result.
 -- Marketing: coupons that have never been used
 SELECT c.coupon_code, c.applies_to, c.discount_pct
 FROM coupons c
-WHERE c.coupon_code NOT IN (SELECT b.coupon_code FROM bookings b);
+WHERE NOT EXISTS (SELECT 1 FROM bookings b WHERE b.coupon_code = c.coupon_code);
 
 -- @R14
 -- Airline partnerships: cancellation rate of flight bookings per airline

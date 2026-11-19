@@ -1,0 +1,31 @@
+query_id,type,avg_ms,median_ms,min_ms,max_ms,scan_nodes
+R01,READ,0.283,0.128,0.125,0.596,Bitmap Heap Scan on flights | Bitmap Index Scan on idx_flights_route_departure | Index Scan using idx_flight_bookings_flight on flight_bookings | Index Scan using pk_bookings on bookings
+R02,READ,0.086,0.074,0.073,0.112,Bitmap Heap Scan on flights | Bitmap Index Scan on idx_flights_route_departure
+R03,READ,0.169,0.122,0.120,0.264,Bitmap Heap Scan on hotels | Bitmap Index Scan on idx_hotels_city_star
+R04,READ,0.136,0.108,0.107,0.194,Index Scan using idx_room_types_hotel on room_types | Bitmap Heap Scan on hotel_bookings | Bitmap Index Scan on idx_hotel_bookings_roomtype_checkin | Index Scan using pk_bookings on bookings
+R05,READ,0.053,0.050,0.047,0.061,Index Scan using idx_bookings_customer_status on bookings | Index Scan using pk_flight_bookings on flight_bookings | Index Scan using pk_flights on flights | Index Scan using uq_hotel_bookings_booking_hotel on hotel_bookings
+R06,READ,0.041,0.030,0.030,0.064,Index Scan using uq_bookings_booking_ref on bookings
+R07,READ,0.296,0.111,0.098,0.679,Index Scan using idx_flight_bookings_flight on flight_bookings | Index Scan using pk_bookings on bookings | Index Scan using pk_passengers on passengers
+R08,READ,0.844,0.836,0.832,0.863,Index Scan using idx_flights_scheduled_departure on flights | Index Only Scan using idx_flight_bookings_flight on flight_bookings
+R09,READ,7.506,7.305,7.177,8.035,Seq Scan on flight_bookings | Index Only Scan using idx_bookings_booked_at_covering on bookings | Seq Scan on flights
+R10,READ,0.029,0.029,0.028,0.030,Index Only Scan using idx_flights_delayed_departure on flights
+R11,READ,0.023,0.023,0.021,0.024,Index Only Scan using idx_bookings_pending_payment_booked_at on bookings
+R12,READ,10.443,10.316,10.316,10.698,Index Only Scan using idx_bookings_booked_at_covering on bookings
+R13,READ,0.084,0.077,0.076,0.098,Seq Scan on coupons | Index Only Scan using idx_bookings_coupon_code_nonnull on bookings
+R14,READ,28.128,28.040,26.990,29.355,Seq Scan on bookings | Seq Scan on flight_bookings | Seq Scan on flights | Seq Scan on airlines
+R15,READ,14.265,14.141,14.108,14.545,Seq Scan on bookings | Seq Scan on hotel_bookings | Seq Scan on hotels
+R16,READ,56.895,56.578,56.158,57.950,Seq Scan on bookings | Seq Scan on customers | Seq Scan on flight_bookings | Seq Scan on flights | Seq Scan on hotel_bookings
+R17,READ,16.157,16.385,15.505,16.580,Index Scan using idx_bookings_booked_at_covering on bookings
+R18,READ,1.492,1.396,1.379,1.700,Bitmap Heap Scan on hotel_reviews | Bitmap Index Scan on idx_hotel_reviews_text_trgm | Bitmap Heap Scan on hotels | Bitmap Index Scan on idx_hotels_city_star
+R19,READ,33.073,32.495,32.129,34.595,Seq Scan on passengers | Seq Scan on flight_bookings | Bitmap Heap Scan on flights | Bitmap Index Scan on uq_flights_number_departure
+R20,READ,1.131,1.168,1.044,1.182,Index Only Scan using idx_bookings_booked_at_covering on bookings
+R21,READ,16.527,16.612,16.274,16.694,Seq Scan on passengers | Seq Scan on flight_bookings | Seq Scan on flights
+R22,READ,0.039,0.039,0.037,0.041,Index Scan using idx_bookings_booked_at_covering on bookings
+R23,READ,0.026,0.023,0.021,0.033,Index Scan using idx_customers_email_lower on customers
+R24,READ,0.794,0.799,0.764,0.818,Bitmap Heap Scan on hotels | Bitmap Index Scan on idx_hotels_city_star | Index Only Scan using idx_hotel_reviews_hotel_rating on hotel_reviews
+R25,READ,14.515,14.525,14.126,14.895,Seq Scan on flight_bookings | Index Only Scan using idx_bookings_booked_at_covering on bookings | Seq Scan on flights
+W01,WRITE,0.924,0.533,0.490,1.748,(no scan)
+W02,WRITE,0.421,0.406,0.256,0.602,Index Only Scan using idx_bookings_pending_payment_booked_at on bookings | Index Scan using pk_bookings on bookings
+W03,WRITE,0.213,0.214,0.204,0.220,Index Scan using uq_bookings_booking_ref on bookings
+W04,WRITE,1.221,1.188,1.170,1.306,Seq Scan on flights
+W05,WRITE,1.265,0.987,0.964,1.844,Index Scan using idx_hotel_bookings_checkin_unassigned on hotel_bookings | Index Scan using pk_bookings on bookings

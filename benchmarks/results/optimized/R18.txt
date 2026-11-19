@@ -1,0 +1,99 @@
+=== R18 run 1 ===
+Limit  (cost=399.79..399.87 rows=30 width=59) (actual time=1.656..1.658 rows=30.00 loops=1)
+  Buffers: shared hit=284
+  ->  Sort  (cost=399.79..400.61 rows=326 width=59) (actual time=1.655..1.657 rows=30.00 loops=1)
+        Sort Key: r.created_at DESC
+        Sort Method: top-N heapsort  Memory: 33kB
+        Buffers: shared hit=284
+        ->  Hash Join  (cost=167.24..390.16 rows=326 width=59) (actual time=0.467..1.618 rows=308.00 loops=1)
+              Hash Cond: (r.hotel_id = h.hotel_id)
+              Buffers: shared hit=281
+              ->  Bitmap Heap Scan on hotel_reviews r  (cost=76.22..293.42 rows=2176 width=43) (actual time=0.352..1.406 rows=2176.00 loops=1)
+                    Recheck Cond: (review_text ~~* '%breakfast%'::text)
+                    Heap Blocks: exact=190
+                    Buffers: shared hit=206
+                    ->  Bitmap Index Scan on idx_hotel_reviews_text_trgm  (cost=0.00..75.68 rows=2176 width=0) (actual time=0.338..0.338 rows=2176.00 loops=1)
+                          Index Cond: (review_text ~~* '%breakfast%'::text)
+                          Index Searches: 1
+                          Buffers: shared hit=16
+              ->  Hash  (cost=85.39..85.39 rows=450 width=24) (actual time=0.110..0.110 rows=450.00 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 33kB
+                    Buffers: shared hit=75
+                    ->  Bitmap Heap Scan on hotels h  (cost=7.77..85.39 rows=450 width=24) (actual time=0.019..0.086 rows=450.00 loops=1)
+                          Recheck Cond: (city_name = 'Goa'::text)
+                          Heap Blocks: exact=72
+                          Buffers: shared hit=75
+                          ->  Bitmap Index Scan on idx_hotels_city_star  (cost=0.00..7.66 rows=450 width=0) (actual time=0.012..0.012 rows=450.00 loops=1)
+                                Index Cond: (city_name = 'Goa'::text)
+                                Index Searches: 1
+                                Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=338
+Planning Time: 4.244 ms
+Execution Time: 1.700 ms
+=== R18 run 2 ===
+Limit  (cost=399.79..399.87 rows=30 width=59) (actual time=1.340..1.342 rows=30.00 loops=1)
+  Buffers: shared hit=284
+  ->  Sort  (cost=399.79..400.61 rows=326 width=59) (actual time=1.340..1.341 rows=30.00 loops=1)
+        Sort Key: r.created_at DESC
+        Sort Method: top-N heapsort  Memory: 33kB
+        Buffers: shared hit=284
+        ->  Hash Join  (cost=167.24..390.16 rows=326 width=59) (actual time=0.314..1.307 rows=308.00 loops=1)
+              Hash Cond: (r.hotel_id = h.hotel_id)
+              Buffers: shared hit=281
+              ->  Bitmap Heap Scan on hotel_reviews r  (cost=76.22..293.42 rows=2176 width=43) (actual time=0.186..1.085 rows=2176.00 loops=1)
+                    Recheck Cond: (review_text ~~* '%breakfast%'::text)
+                    Heap Blocks: exact=190
+                    Buffers: shared hit=206
+                    ->  Bitmap Index Scan on idx_hotel_reviews_text_trgm  (cost=0.00..75.68 rows=2176 width=0) (actual time=0.174..0.175 rows=2176.00 loops=1)
+                          Index Cond: (review_text ~~* '%breakfast%'::text)
+                          Index Searches: 1
+                          Buffers: shared hit=16
+              ->  Hash  (cost=85.39..85.39 rows=450 width=24) (actual time=0.124..0.124 rows=450.00 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 33kB
+                    Buffers: shared hit=75
+                    ->  Bitmap Heap Scan on hotels h  (cost=7.77..85.39 rows=450 width=24) (actual time=0.018..0.093 rows=450.00 loops=1)
+                          Recheck Cond: (city_name = 'Goa'::text)
+                          Heap Blocks: exact=72
+                          Buffers: shared hit=75
+                          ->  Bitmap Index Scan on idx_hotels_city_star  (cost=0.00..7.66 rows=450 width=0) (actual time=0.012..0.012 rows=450.00 loops=1)
+                                Index Cond: (city_name = 'Goa'::text)
+                                Index Searches: 1
+                                Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=338
+Planning Time: 0.767 ms
+Execution Time: 1.379 ms
+=== R18 run 3 ===
+Limit  (cost=399.79..399.87 rows=30 width=59) (actual time=1.357..1.359 rows=30.00 loops=1)
+  Buffers: shared hit=284
+  ->  Sort  (cost=399.79..400.61 rows=326 width=59) (actual time=1.356..1.357 rows=30.00 loops=1)
+        Sort Key: r.created_at DESC
+        Sort Method: top-N heapsort  Memory: 33kB
+        Buffers: shared hit=284
+        ->  Hash Join  (cost=167.24..390.16 rows=326 width=59) (actual time=0.292..1.322 rows=308.00 loops=1)
+              Hash Cond: (r.hotel_id = h.hotel_id)
+              Buffers: shared hit=281
+              ->  Bitmap Heap Scan on hotel_reviews r  (cost=76.22..293.42 rows=2176 width=43) (actual time=0.180..1.115 rows=2176.00 loops=1)
+                    Recheck Cond: (review_text ~~* '%breakfast%'::text)
+                    Heap Blocks: exact=190
+                    Buffers: shared hit=206
+                    ->  Bitmap Index Scan on idx_hotel_reviews_text_trgm  (cost=0.00..75.68 rows=2176 width=0) (actual time=0.168..0.168 rows=2176.00 loops=1)
+                          Index Cond: (review_text ~~* '%breakfast%'::text)
+                          Index Searches: 1
+                          Buffers: shared hit=16
+              ->  Hash  (cost=85.39..85.39 rows=450 width=24) (actual time=0.108..0.108 rows=450.00 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 33kB
+                    Buffers: shared hit=75
+                    ->  Bitmap Heap Scan on hotels h  (cost=7.77..85.39 rows=450 width=24) (actual time=0.018..0.085 rows=450.00 loops=1)
+                          Recheck Cond: (city_name = 'Goa'::text)
+                          Heap Blocks: exact=72
+                          Buffers: shared hit=75
+                          ->  Bitmap Index Scan on idx_hotels_city_star  (cost=0.00..7.66 rows=450 width=0) (actual time=0.012..0.012 rows=450.00 loops=1)
+                                Index Cond: (city_name = 'Goa'::text)
+                                Index Searches: 1
+                                Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=338
+Planning Time: 0.772 ms
+Execution Time: 1.396 ms

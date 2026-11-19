@@ -1,0 +1,111 @@
+=== R19 run 1 ===
+Sort  (cost=7314.95..7316.75 rows=718 width=27) (actual time=34.475..34.490 rows=720.00 loops=1)
+  Sort Key: (COALESCE((count(*)), '0'::bigint)) DESC, f.departure_at
+  Sort Method: quicksort  Memory: 58kB
+  Buffers: shared hit=2030
+  ->  Hash Right Join  (cost=6991.12..7280.89 rows=718 width=27) (actual time=33.411..34.344 rows=720.00 loops=1)
+        Hash Cond: (fb.flight_id = f.flight_id)
+        Buffers: shared hit=2024
+        ->  HashAggregate  (cost=6709.82..6837.89 rows=12807 width=12) (actual time=33.173..33.694 rows=13477.00 loops=1)
+              Group Key: fb.flight_id
+              Batches: 1  Memory Usage: 1305kB
+              Buffers: shared hit=1920
+              ->  Hash Join  (cost=2550.23..5892.92 rows=163380 width=4) (actual time=6.246..23.950 rows=163380.00 loops=1)
+                    Hash Cond: (p.booking_id = fb.booking_id)
+                    Buffers: shared hit=1920
+                    ->  Seq Scan on passengers p  (cost=0.00..2913.80 rows=163380 width=8) (actual time=0.005..6.178 rows=163380.00 loops=1)
+                          Buffers: shared hit=1280
+                    ->  Hash  (cost=1488.99..1488.99 rows=84899 width=12) (actual time=6.177..6.177 rows=84899.00 loops=1)
+                          Buckets: 131072  Batches: 1  Memory Usage: 5004kB
+                          Buffers: shared hit=640
+                          ->  Seq Scan on flight_bookings fb  (cost=0.00..1488.99 rows=84899 width=12) (actual time=0.003..2.872 rows=84899.00 loops=1)
+                                Buffers: shared hit=640
+        ->  Hash  (cost=272.32..272.32 rows=718 width=19) (actual time=0.232..0.233 rows=720.00 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 48kB
+              Buffers: shared hit=104
+              ->  Bitmap Heap Scan on flights f  (cost=102.55..272.32 rows=718 width=19) (actual time=0.161..0.203 rows=720.00 loops=1)
+                    Recheck Cond: ((departure_at >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (departure_at < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                    Heap Blocks: exact=10
+                    Buffers: shared hit=104
+                    ->  Bitmap Index Scan on uq_flights_number_departure  (cost=0.00..102.38 rows=718 width=0) (actual time=0.157..0.157 rows=730.00 loops=1)
+                          Index Cond: ((departure_at >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (departure_at < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                          Index Searches: 25
+                          Buffers: shared hit=94
+Planning:
+  Buffers: shared hit=351
+Planning Time: 0.563 ms
+Execution Time: 34.595 ms
+=== R19 run 2 ===
+Sort  (cost=7314.95..7316.75 rows=718 width=27) (actual time=32.398..32.414 rows=720.00 loops=1)
+  Sort Key: (COALESCE((count(*)), '0'::bigint)) DESC, f.departure_at
+  Sort Method: quicksort  Memory: 58kB
+  Buffers: shared hit=2030
+  ->  Hash Right Join  (cost=6991.12..7280.89 rows=718 width=27) (actual time=31.266..32.266 rows=720.00 loops=1)
+        Hash Cond: (fb.flight_id = f.flight_id)
+        Buffers: shared hit=2024
+        ->  HashAggregate  (cost=6709.82..6837.89 rows=12807 width=12) (actual time=31.091..31.642 rows=13477.00 loops=1)
+              Group Key: fb.flight_id
+              Batches: 1  Memory Usage: 1305kB
+              Buffers: shared hit=1920
+              ->  Hash Join  (cost=2550.23..5892.92 rows=163380 width=4) (actual time=6.235..21.660 rows=163380.00 loops=1)
+                    Hash Cond: (p.booking_id = fb.booking_id)
+                    Buffers: shared hit=1920
+                    ->  Seq Scan on passengers p  (cost=0.00..2913.80 rows=163380 width=8) (actual time=0.003..3.939 rows=163380.00 loops=1)
+                          Buffers: shared hit=1280
+                    ->  Hash  (cost=1488.99..1488.99 rows=84899 width=12) (actual time=6.175..6.175 rows=84899.00 loops=1)
+                          Buckets: 131072  Batches: 1  Memory Usage: 5004kB
+                          Buffers: shared hit=640
+                          ->  Seq Scan on flight_bookings fb  (cost=0.00..1488.99 rows=84899 width=12) (actual time=0.002..2.884 rows=84899.00 loops=1)
+                                Buffers: shared hit=640
+        ->  Hash  (cost=272.32..272.32 rows=718 width=19) (actual time=0.169..0.170 rows=720.00 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 48kB
+              Buffers: shared hit=104
+              ->  Bitmap Heap Scan on flights f  (cost=102.55..272.32 rows=718 width=19) (actual time=0.102..0.142 rows=720.00 loops=1)
+                    Recheck Cond: ((departure_at >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (departure_at < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                    Heap Blocks: exact=10
+                    Buffers: shared hit=104
+                    ->  Bitmap Index Scan on uq_flights_number_departure  (cost=0.00..102.38 rows=718 width=0) (actual time=0.098..0.099 rows=730.00 loops=1)
+                          Index Cond: ((departure_at >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (departure_at < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                          Index Searches: 25
+                          Buffers: shared hit=94
+Planning:
+  Buffers: shared hit=351
+Planning Time: 0.524 ms
+Execution Time: 32.495 ms
+=== R19 run 3 ===
+Sort  (cost=7314.95..7316.75 rows=718 width=27) (actual time=32.025..32.040 rows=720.00 loops=1)
+  Sort Key: (COALESCE((count(*)), '0'::bigint)) DESC, f.departure_at
+  Sort Method: quicksort  Memory: 58kB
+  Buffers: shared hit=2030
+  ->  Hash Right Join  (cost=6991.12..7280.89 rows=718 width=27) (actual time=30.920..31.902 rows=720.00 loops=1)
+        Hash Cond: (fb.flight_id = f.flight_id)
+        Buffers: shared hit=2024
+        ->  HashAggregate  (cost=6709.82..6837.89 rows=12807 width=12) (actual time=30.742..31.290 rows=13477.00 loops=1)
+              Group Key: fb.flight_id
+              Batches: 1  Memory Usage: 1305kB
+              Buffers: shared hit=1920
+              ->  Hash Join  (cost=2550.23..5892.92 rows=163380 width=4) (actual time=6.123..21.436 rows=163380.00 loops=1)
+                    Hash Cond: (p.booking_id = fb.booking_id)
+                    Buffers: shared hit=1920
+                    ->  Seq Scan on passengers p  (cost=0.00..2913.80 rows=163380 width=8) (actual time=0.003..3.901 rows=163380.00 loops=1)
+                          Buffers: shared hit=1280
+                    ->  Hash  (cost=1488.99..1488.99 rows=84899 width=12) (actual time=6.036..6.036 rows=84899.00 loops=1)
+                          Buckets: 131072  Batches: 1  Memory Usage: 5004kB
+                          Buffers: shared hit=640
+                          ->  Seq Scan on flight_bookings fb  (cost=0.00..1488.99 rows=84899 width=12) (actual time=0.002..2.842 rows=84899.00 loops=1)
+                                Buffers: shared hit=640
+        ->  Hash  (cost=272.32..272.32 rows=718 width=19) (actual time=0.172..0.173 rows=720.00 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 48kB
+              Buffers: shared hit=104
+              ->  Bitmap Heap Scan on flights f  (cost=102.55..272.32 rows=718 width=19) (actual time=0.104..0.143 rows=720.00 loops=1)
+                    Recheck Cond: ((departure_at >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (departure_at < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                    Heap Blocks: exact=10
+                    Buffers: shared hit=104
+                    ->  Bitmap Index Scan on uq_flights_number_departure  (cost=0.00..102.38 rows=718 width=0) (actual time=0.099..0.101 rows=730.00 loops=1)
+                          Index Cond: ((departure_at >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (departure_at < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                          Index Searches: 25
+                          Buffers: shared hit=94
+Planning:
+  Buffers: shared hit=351
+Planning Time: 0.522 ms
+Execution Time: 32.129 ms
