@@ -74,7 +74,23 @@ CREATE INDEX IF NOT EXISTS idx_hotel_reviews_text_trgm
     ON hotel_reviews USING gin (review_text gin_trgm_ops);
 
 -- Indexes requested by Yash (R23–R25, W01–W05)
--- TODO: Add only Yash's owner-tested indexes. Check for exact duplicates and key-prefix duplicates.
+-- (Analysed by Parv.) R23 sign-in: WHERE lower(email) = '...' cannot use uq_customers_email (on email itself).
+-- Expression B-tree on lower(email) matches the predicate exactly.
+CREATE INDEX IF NOT EXISTS idx_customers_email_lower
+    ON customers (lower(email));
+
+-- R24 Goa hotel ranking: hotel_reviews joined on hotel_id; INCLUDE rating so avg(rating) can be read from the index.
+-- The hotels side uses idx_hotels_city_star.
+CREATE INDEX IF NOT EXISTS idx_hotel_reviews_hotel_rating
+    ON hotel_reviews (hotel_id) INCLUDE (rating);
+
+-- W05 front desk: check_in = '2026-07-01' AND room_number IS NULL. Partial B-tree holds only stays without a room;
+-- idx_hotel_bookings_roomtype_checkin cannot be used (room_type_id leads). Rows leave this index once a room is assigned.
+CREATE INDEX IF NOT EXISTS idx_hotel_bookings_checkin_unassigned
+    ON hotel_bookings (check_in) WHERE room_number IS NULL;
+
+-- Tested, nothing added: R25 (already uses idx_bookings_booked_at_covering), W01/W03 (insert / unique lookup),
+-- W02 (already served by idx_bookings_pending_payment_booked_at), W04 (small table, no gain).
 
 ANALYZE;
 -- Write overhead review for this file's indexes:
@@ -86,3 +102,6 @@ ANALYZE;
 -- while W02/W03 only change status. W05 updates room_number, not an indexed column (no R15 index retained).
 -- Parv's indexes: W01 inserts into idx_bookings_customer_status; W02/W03 change status in that index.
 -- W04 may remove rows from idx_flights_scheduled_departure; W05 changes no Parv-indexed column.
+-- idx_customers_email_lower: no workload write touches customers.
+-- idx_hotel_reviews_hotel_rating: no workload write touches hotel_reviews.
+-- idx_hotel_bookings_checkin_unassigned: W05 sets room_number, so updated rows leave this partial index (extra index write).
