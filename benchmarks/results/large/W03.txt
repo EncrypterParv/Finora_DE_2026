@@ -1,0 +1,36 @@
+=== W03 run 1 ===
+Update on bookings  (cost=0.43..8.46 rows=0 width=0) (actual time=1.485..1.486 rows=0.00 loops=1)
+  Buffers: shared hit=57 read=11 dirtied=6
+  ->  Index Scan using uq_bookings_booking_ref on bookings  (cost=0.43..8.46 rows=1 width=80) (actual time=0.245..0.246 rows=1.00 loops=1)
+        Index Cond: (booking_ref = 'MMA7772F'::bpchar)
+        Filter: ((status)::text <> 'CANCELLED'::text)
+        Index Searches: 1
+        Buffers: shared hit=1 read=3
+Planning:
+  Buffers: shared hit=212
+Planning Time: 0.681 ms
+Execution Time: 1.561 ms
+=== W03 run 2 ===
+Update on bookings  (cost=0.43..8.46 rows=0 width=0) (actual time=0.356..0.357 rows=0.00 loops=1)
+  Buffers: shared hit=70 read=1 dirtied=1
+  ->  Index Scan using uq_bookings_booking_ref on bookings  (cost=0.43..8.46 rows=1 width=80) (actual time=0.030..0.033 rows=1.00 loops=1)
+        Index Cond: (booking_ref = 'MMA7772F'::bpchar)
+        Filter: ((status)::text <> 'CANCELLED'::text)
+        Index Searches: 1
+        Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=212
+Planning Time: 0.660 ms
+Execution Time: 0.432 ms
+=== W03 run 3 ===
+Update on bookings  (cost=0.43..8.46 rows=0 width=0) (actual time=0.388..0.388 rows=0.00 loops=1)
+  Buffers: shared hit=71 dirtied=1
+  ->  Index Scan using uq_bookings_booking_ref on bookings  (cost=0.43..8.46 rows=1 width=80) (actual time=0.040..0.044 rows=1.00 loops=1)
+        Index Cond: (booking_ref = 'MMA7772F'::bpchar)
+        Filter: ((status)::text <> 'CANCELLED'::text)
+        Index Searches: 1
+        Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=212
+Planning Time: 0.692 ms
+Execution Time: 0.476 ms

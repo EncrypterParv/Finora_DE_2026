@@ -1,0 +1,42 @@
+=== R13 run 1 ===
+Nested Loop Anti Join  (cost=0.42..15.37 rows=10 width=17) (actual time=0.797..3.402 rows=10.00 loops=1)
+  Buffers: shared hit=69 read=23
+  ->  Seq Scan on coupons c  (cost=0.00..1.30 rows=30 width=17) (actual time=0.006..0.010 rows=30.00 loops=1)
+        Buffers: shared hit=1
+  ->  Index Only Scan using idx_bookings_coupon_code_nonnull on bookings b  (cost=0.42..353.60 rows=17669 width=10) (actual time=0.112..0.112 rows=0.67 loops=30)
+        Index Cond: (coupon_code = (c.coupon_code)::text)
+        Heap Fetches: 0
+        Index Searches: 30
+        Buffers: shared hit=68 read=23
+Planning:
+  Buffers: shared hit=367 read=3
+Planning Time: 1.528 ms
+Execution Time: 3.434 ms
+=== R13 run 2 ===
+Nested Loop Anti Join  (cost=0.42..15.37 rows=10 width=17) (actual time=0.055..0.150 rows=10.00 loops=1)
+  Buffers: shared hit=92
+  ->  Seq Scan on coupons c  (cost=0.00..1.30 rows=30 width=17) (actual time=0.005..0.007 rows=30.00 loops=1)
+        Buffers: shared hit=1
+  ->  Index Only Scan using idx_bookings_coupon_code_nonnull on bookings b  (cost=0.42..353.60 rows=17669 width=10) (actual time=0.004..0.004 rows=0.67 loops=30)
+        Index Cond: (coupon_code = (c.coupon_code)::text)
+        Heap Fetches: 0
+        Index Searches: 30
+        Buffers: shared hit=91
+Planning:
+  Buffers: shared hit=370
+Planning Time: 0.870 ms
+Execution Time: 0.181 ms
+=== R13 run 3 ===
+Nested Loop Anti Join  (cost=0.42..15.37 rows=10 width=17) (actual time=0.056..0.157 rows=10.00 loops=1)
+  Buffers: shared hit=92
+  ->  Seq Scan on coupons c  (cost=0.00..1.30 rows=30 width=17) (actual time=0.005..0.007 rows=30.00 loops=1)
+        Buffers: shared hit=1
+  ->  Index Only Scan using idx_bookings_coupon_code_nonnull on bookings b  (cost=0.42..353.60 rows=17669 width=10) (actual time=0.005..0.005 rows=0.67 loops=30)
+        Index Cond: (coupon_code = (c.coupon_code)::text)
+        Heap Fetches: 0
+        Index Searches: 30
+        Buffers: shared hit=91
+Planning:
+  Buffers: shared hit=370
+Planning Time: 0.891 ms
+Execution Time: 0.189 ms

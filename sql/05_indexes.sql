@@ -46,8 +46,12 @@ CREATE INDEX IF NOT EXISTS idx_flights_route_departure
     ON flights USING btree (origin, destination, departure_at);
 
 -- R01/R07/R08: flight join key with passengers covered for per-flight sums.
+-- PHASE 5 FIX: booking_id added to INCLUDE. On large data R01 (avg 5.501 ms, target < 5 ms) and R07 fetched
+-- one flight_bookings heap row per booking (101 and 148 rows) only to read booking_id for the bookings join;
+-- on a cold first run those were random heap reads. With booking_id included, both read flight_bookings as an
+-- Index Only Scan (Heap Fetches: 0). R08 keeps its Index Only Scan.
 CREATE INDEX IF NOT EXISTS idx_flight_bookings_flight
-    ON flight_bookings USING btree (flight_id) INCLUDE (passengers);
+    ON flight_bookings USING btree (flight_id) INCLUDE (passengers, booking_id);
 
 -- R03/R18: city equality, then star-rating range; city alone is the leftmost prefix for R18.
 CREATE INDEX IF NOT EXISTS idx_hotels_city_star
@@ -91,6 +95,22 @@ CREATE INDEX IF NOT EXISTS idx_hotel_bookings_checkin_unassigned
 
 -- Tested, nothing added: R25 (already uses idx_bookings_booked_at_covering), W01/W03 (insert / unique lookup),
 -- W02 (already served by idx_bookings_pending_payment_booked_at), W04 (small table, no gain).
+
+-- PHASE 5 FIX: R03 on large data read 1311 buffers: idx_hotels_city_star matched every 4★+ Goa hotel, then
+-- the pool filter, a heap fetch per row and a top-N sort ran before LIMIT 20. Keys are city equality,
+-- the exact pool expression from R03, then user_rating in the query's ORDER BY direction, so the scan
+-- returns rows already ordered and stops after 20 rows that pass star_rating >= 4 (INCLUDE column).
+CREATE INDEX IF NOT EXISTS idx_hotels_city_pool_rating
+    ON hotels USING btree (city_name, (amenities ->> 'pool'), user_rating DESC NULLS LAST)
+    INCLUDE (star_rating, hotel_name);
+
+-- PHASE 5 FIX: W02 on large data walked pk_bookings in booking_id order, filtering status row by row
+-- (2,895,317 rows removed) because pending bookings sit at the high end of booking_id. A partial index on
+-- booking_id for pending rows only answers min(booking_id) WHERE status = 'PENDING_PAYMENT' from its first
+-- entry. Write overhead: W01 inserts a pending entry; W02/W03 remove a row when its status leaves pending.
+CREATE INDEX IF NOT EXISTS idx_bookings_pending_payment_id
+    ON bookings USING btree (booking_id)
+    WHERE status = 'PENDING_PAYMENT';
 
 ANALYZE;
 -- Write overhead review for this file's indexes:

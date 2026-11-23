@@ -1,0 +1,27 @@
+=== R06 run 1 ===
+Index Scan using uq_bookings_booking_ref on bookings  (cost=0.43..8.45 rows=1 width=42) (actual time=0.029..0.041 rows=1.00 loops=1)
+  Index Cond: (booking_ref = 'MMA7772F'::bpchar)
+  Index Searches: 1
+  Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=203
+Planning Time: 1.120 ms
+Execution Time: 0.080 ms
+=== R06 run 2 ===
+Index Scan using uq_bookings_booking_ref on bookings  (cost=0.43..8.45 rows=1 width=42) (actual time=0.019..0.020 rows=1.00 loops=1)
+  Index Cond: (booking_ref = 'MMA7772F'::bpchar)
+  Index Searches: 1
+  Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=203
+Planning Time: 0.621 ms
+Execution Time: 0.055 ms
+=== R06 run 3 ===
+Index Scan using uq_bookings_booking_ref on bookings  (cost=0.43..8.45 rows=1 width=42) (actual time=0.020..0.020 rows=1.00 loops=1)
+  Index Cond: (booking_ref = 'MMA7772F'::bpchar)
+  Index Searches: 1
+  Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=203
+Planning Time: 0.657 ms
+Execution Time: 0.059 ms

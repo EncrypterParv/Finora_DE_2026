@@ -1,0 +1,36 @@
+=== R03 run 1 ===
+Limit  (cost=0.41..163.60 rows=20 width=34) (actual time=0.445..1.924 rows=20.00 loops=1)
+  Buffers: shared hit=4 read=18
+  ->  Index Scan using idx_hotels_city_pool_rating on hotels  (cost=0.41..4789.82 rows=587 width=34) (actual time=0.444..1.921 rows=20.00 loops=1)
+        Index Cond: ((city_name = 'Goa'::text) AND ((amenities ->> 'pool'::text) = 'true'::text))
+        Filter: (star_rating >= 4)
+        Index Searches: 1
+        Buffers: shared hit=4 read=18
+Planning:
+  Buffers: shared hit=178
+Planning Time: 0.571 ms
+Execution Time: 1.943 ms
+=== R03 run 2 ===
+Limit  (cost=0.41..163.60 rows=20 width=34) (actual time=0.026..0.059 rows=20.00 loops=1)
+  Buffers: shared hit=22
+  ->  Index Scan using idx_hotels_city_pool_rating on hotels  (cost=0.41..4789.82 rows=587 width=34) (actual time=0.025..0.057 rows=20.00 loops=1)
+        Index Cond: ((city_name = 'Goa'::text) AND ((amenities ->> 'pool'::text) = 'true'::text))
+        Filter: (star_rating >= 4)
+        Index Searches: 1
+        Buffers: shared hit=22
+Planning:
+  Buffers: shared hit=178
+Planning Time: 0.501 ms
+Execution Time: 0.078 ms
+=== R03 run 3 ===
+Limit  (cost=0.41..163.60 rows=20 width=34) (actual time=0.032..0.078 rows=20.00 loops=1)
+  Buffers: shared hit=22
+  ->  Index Scan using idx_hotels_city_pool_rating on hotels  (cost=0.41..4789.82 rows=587 width=34) (actual time=0.031..0.076 rows=20.00 loops=1)
+        Index Cond: ((city_name = 'Goa'::text) AND ((amenities ->> 'pool'::text) = 'true'::text))
+        Filter: (star_rating >= 4)
+        Index Searches: 1
+        Buffers: shared hit=22
+Planning:
+  Buffers: shared hit=178
+Planning Time: 0.601 ms
+Execution Time: 0.102 ms
