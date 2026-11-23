@@ -31,6 +31,68 @@
 
 ---
 
+## How to run
+
+**Prerequisites:** PostgreSQL 15 or newer (we used PostgreSQL 18.6, Postgres.app), `psql`, `createdb` and `bash`. Run everything from the repository root; set `PGHOST`/`PGPORT`/`PGUSER` if your server is not the default. Every database uses the session timezone **Asia/Kolkata**.
+
+```bash
+unzip seed_data.zip                      # -> seed_data/<table>.csv (12 files; never commit them)
+
+# Phase 2-3: baseline database (schema + data + PK/UNIQUE indexes only)
+createdb mmt_baseline
+psql -d mmt_baseline -c "ALTER DATABASE mmt_baseline SET timezone = 'Asia/Kolkata';"
+psql -d mmt_baseline -v ON_ERROR_STOP=1 -f sql/01_schema.sql
+psql -d mmt_baseline -f sql/02_load_data.sql
+./benchmarks/run_benchmark.sh mmt_baseline baseline          # -> benchmarks/results/baseline/
+
+# Phase 4: optimized database (same schema and data, plus 05_indexes.sql)
+createdb mmt_optimized
+psql -d mmt_optimized -c "ALTER DATABASE mmt_optimized SET timezone = 'Asia/Kolkata';"
+psql -d mmt_optimized -v ON_ERROR_STOP=1 -f sql/01_schema.sql
+psql -d mmt_optimized -f sql/02_load_data.sql
+psql -d mmt_optimized -v ON_ERROR_STOP=1 -f sql/05_indexes.sql
+./benchmarks/run_benchmark.sh mmt_optimized optimized 3 sql/06_optimized_queries.sql
+
+# Phase 5: large data (load script with only seed_data/ changed to large_data/)
+unzip large_data.zip                     # -> large_data/<table>.csv (never commit them)
+sed 's#seed_data/#large_data/#g' sql/02_load_data.sql > /tmp/02_load_large.sql
+createdb mmt_large
+psql -d mmt_large -c "ALTER DATABASE mmt_large SET timezone = 'Asia/Kolkata';"
+psql -d mmt_large -v ON_ERROR_STOP=1 -f sql/01_schema.sql
+psql -d mmt_large -f /tmp/02_load_large.sql
+psql -d mmt_large -v ON_ERROR_STOP=1 -f sql/05_indexes.sql
+psql -d mmt_large -c "ANALYZE;"
+./benchmarks/run_benchmark.sh mmt_large large 3 sql/06_optimized_queries.sql
+
+# Phase 5 design: partitioned copy of bookings in schema mmt_part (does not touch mmt)
+psql -d mmt_large -f sql/08_partitioning.sql
+```
+
+- **Never run `sql/05_indexes.sql` or `sql/08_partitioning.sql` on the baseline database**, and never run the original `queries/workload_30.sql` on the large data (use `sql/06_optimized_queries.sql`).
+- The benchmark runs each query 3 times with `EXPLAIN (ANALYZE, BUFFERS)`; write queries run inside `BEGIN … ROLLBACK`, so the data does not change.
+
+## Headline numbers
+
+Generated from `benchmarks/results/{baseline,optimized,large}/summary.csv` (average of 3 runs per query).
+
+| | Baseline (seed) | Optimized (seed) | Optimized (large data) |
+|---|---:|---:|---:|
+| Sum of the 30 query averages (ms) | 1628.864 | 207.079 | 6944.618 |
+
+**Top 3 improvements on seed data** (largest drop in average time, baseline → optimized):
+
+| Query | Baseline (ms) | Optimized (ms) | Change |
+|---|---:|---:|---:|
+| R19 | 1328.493 | 33.073 | −97.5% |
+| R22 | 32.400 | 0.039 | −99.9% |
+| R12 | 26.540 | 10.443 | −60.7% |
+
+**Performance targets on the large data (README 5.2): 30/30 met**.
+
+Reports: [01 Problem understanding](docs/01_problem_understanding.md) · [02 Schema design](docs/02_schema_design.md) · [03 Baseline timings](docs/03_baseline_timings.md) · [04 Optimization report](docs/04_optimization_report.md) · [05 Scalability report](docs/05_scalability_report.md)
+
+---
+
 ## How this project works
 
 | Phase | What you do | You submit | Counts toward | Marks |
