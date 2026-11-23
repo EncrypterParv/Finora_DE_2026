@@ -1,0 +1,54 @@
+=== R22 run 1 ===
+Limit  (cost=0.50..3.24 rows=25 width=47) (actual time=0.391..0.394 rows=25.00 loops=1)
+  Buffers: shared hit=10 read=3
+  ->  Incremental Sort  (cost=0.50..96998.82 rows=885932 width=47) (actual time=0.390..0.391 rows=25.00 loops=1)
+        Sort Key: booked_at DESC, booking_id DESC
+        Presorted Key: booked_at
+        Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 27kB  Peak Memory: 27kB
+        Buffers: shared hit=10 read=3
+        ->  Index Scan Backward using idx_bookings_booked_at_covering on bookings  (cost=0.43..57131.88 rows=885932 width=47) (actual time=0.369..0.373 rows=26.00 loops=1)
+              Index Cond: (booked_at <= '2025-06-18 22:17:24+05:30'::timestamp with time zone)
+              Filter: (ROW(booked_at, booking_id) < ROW('2025-06-18 22:17:24+05:30'::timestamp with time zone, 46410))
+              Rows Removed by Filter: 1
+              Index Searches: 1
+              Buffers: shared hit=1 read=3
+Planning:
+  Buffers: shared hit=243
+Planning Time: 0.710 ms
+Execution Time: 0.427 ms
+=== R22 run 2 ===
+Limit  (cost=0.50..3.24 rows=25 width=47) (actual time=0.033..0.036 rows=25.00 loops=1)
+  Buffers: shared hit=13
+  ->  Incremental Sort  (cost=0.50..96998.82 rows=885932 width=47) (actual time=0.033..0.034 rows=25.00 loops=1)
+        Sort Key: booked_at DESC, booking_id DESC
+        Presorted Key: booked_at
+        Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 27kB  Peak Memory: 27kB
+        Buffers: shared hit=13
+        ->  Index Scan Backward using idx_bookings_booked_at_covering on bookings  (cost=0.43..57131.88 rows=885932 width=47) (actual time=0.011..0.015 rows=26.00 loops=1)
+              Index Cond: (booked_at <= '2025-06-18 22:17:24+05:30'::timestamp with time zone)
+              Filter: (ROW(booked_at, booking_id) < ROW('2025-06-18 22:17:24+05:30'::timestamp with time zone, 46410))
+              Rows Removed by Filter: 1
+              Index Searches: 1
+              Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=243
+Planning Time: 0.602 ms
+Execution Time: 0.068 ms
+=== R22 run 3 ===
+Limit  (cost=0.50..3.24 rows=25 width=47) (actual time=0.032..0.035 rows=25.00 loops=1)
+  Buffers: shared hit=13
+  ->  Incremental Sort  (cost=0.50..96998.82 rows=885932 width=47) (actual time=0.031..0.032 rows=25.00 loops=1)
+        Sort Key: booked_at DESC, booking_id DESC
+        Presorted Key: booked_at
+        Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 27kB  Peak Memory: 27kB
+        Buffers: shared hit=13
+        ->  Index Scan Backward using idx_bookings_booked_at_covering on bookings  (cost=0.43..57131.88 rows=885932 width=47) (actual time=0.011..0.015 rows=26.00 loops=1)
+              Index Cond: (booked_at <= '2025-06-18 22:17:24+05:30'::timestamp with time zone)
+              Filter: (ROW(booked_at, booking_id) < ROW('2025-06-18 22:17:24+05:30'::timestamp with time zone, 46410))
+              Rows Removed by Filter: 1
+              Index Searches: 1
+              Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=243
+Planning Time: 0.628 ms
+Execution Time: 0.067 ms

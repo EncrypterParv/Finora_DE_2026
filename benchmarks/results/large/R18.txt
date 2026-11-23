@@ -1,0 +1,120 @@
+=== R18 run 1 ===
+Limit  (cost=6840.64..6932.47 rows=30 width=61) (actual time=33.211..46.109 rows=30.00 loops=1)
+  Buffers: shared hit=411 read=4173
+  ->  Nested Loop  (cost=6840.64..27236.05 rows=6663 width=61) (actual time=33.210..46.105 rows=30.00 loops=1)
+        Buffers: shared hit=411 read=4173
+        ->  Gather Merge  (cost=6840.34..11979.78 rows=44128 width=43) (actual time=31.666..33.290 rows=207.00 loops=1)
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=94 read=3869
+              ->  Sort  (cost=5840.32..5886.29 rows=18387 width=43) (actual time=26.996..27.023 rows=561.00 loops=3)
+                    Sort Key: r.created_at DESC
+                    Sort Method: quicksort  Memory: 1560kB
+                    Buffers: shared hit=94 read=3869
+                    Worker 0:  Sort Method: quicksort  Memory: 1451kB
+                    Worker 1:  Sort Method: quicksort  Memory: 1451kB
+                    ->  Parallel Bitmap Heap Scan on hotel_reviews r  (cost=444.10..4537.93 rows=18387 width=43) (actual time=7.638..23.998 rows=14856.00 loops=3)
+                          Recheck Cond: (review_text ~~* '%breakfast%'::text)
+                          Heap Blocks: exact=1344
+                          Buffers: shared hit=78 read=3869
+                          Worker 0:  Heap Blocks: exact=1231
+                          Worker 1:  Heap Blocks: exact=1234
+                          ->  Bitmap Index Scan on idx_hotel_reviews_text_trgm  (cost=0.00..433.06 rows=44128 width=0) (actual time=11.168..11.168 rows=44568.00 loops=1)
+                                Index Cond: (review_text ~~* '%breakfast%'::text)
+                                Index Searches: 1
+                                Buffers: shared hit=38 read=60
+        ->  Memoize  (cost=0.30..0.47 rows=1 width=26) (actual time=0.062..0.062 rows=0.14 loops=207)
+              Cache Key: r.hotel_id
+              Cache Mode: logical
+              Hits: 0  Misses: 207  Evictions: 0  Overflows: 0  Memory Usage: 16kB
+              Buffers: shared hit=317 read=304
+              ->  Index Scan using pk_hotels on hotels h  (cost=0.29..0.46 rows=1 width=26) (actual time=0.061..0.061 rows=0.14 loops=207)
+                    Index Cond: (hotel_id = r.hotel_id)
+                    Filter: (city_name = 'Goa'::text)
+                    Rows Removed by Filter: 1
+                    Index Searches: 207
+                    Buffers: shared hit=317 read=304
+Planning:
+  Buffers: shared hit=335 read=39
+Planning Time: 8.456 ms
+Execution Time: 46.332 ms
+=== R18 run 2 ===
+Limit  (cost=6840.64..6932.47 rows=30 width=61) (actual time=26.452..28.877 rows=30.00 loops=1)
+  Buffers: shared hit=4585 read=2
+  ->  Nested Loop  (cost=6840.64..27236.05 rows=6663 width=61) (actual time=26.451..28.874 rows=30.00 loops=1)
+        Buffers: shared hit=4585 read=2
+        ->  Gather Merge  (cost=6840.34..11979.78 rows=44128 width=43) (actual time=26.253..27.882 rows=208.00 loops=1)
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=3963
+              ->  Sort  (cost=5840.32..5886.29 rows=18387 width=43) (actual time=23.590..23.613 rows=547.67 loops=3)
+                    Sort Key: r.created_at DESC
+                    Sort Method: quicksort  Memory: 1515kB
+                    Buffers: shared hit=3963
+                    Worker 0:  Sort Method: quicksort  Memory: 1474kB
+                    Worker 1:  Sort Method: quicksort  Memory: 1473kB
+                    ->  Parallel Bitmap Heap Scan on hotel_reviews r  (cost=444.10..4537.93 rows=18387 width=43) (actual time=5.309..20.662 rows=14856.00 loops=3)
+                          Recheck Cond: (review_text ~~* '%breakfast%'::text)
+                          Heap Blocks: exact=1299
+                          Buffers: shared hit=3947
+                          Worker 0:  Heap Blocks: exact=1260
+                          Worker 1:  Heap Blocks: exact=1250
+                          ->  Bitmap Index Scan on idx_hotel_reviews_text_trgm  (cost=0.00..433.06 rows=44128 width=0) (actual time=7.244..7.244 rows=44568.00 loops=1)
+                                Index Cond: (review_text ~~* '%breakfast%'::text)
+                                Index Searches: 1
+                                Buffers: shared hit=98
+        ->  Memoize  (cost=0.30..0.47 rows=1 width=26) (actual time=0.005..0.005 rows=0.14 loops=208)
+              Cache Key: r.hotel_id
+              Cache Mode: logical
+              Hits: 0  Misses: 208  Evictions: 0  Overflows: 0  Memory Usage: 16kB
+              Buffers: shared hit=622 read=2
+              ->  Index Scan using pk_hotels on hotels h  (cost=0.29..0.46 rows=1 width=26) (actual time=0.004..0.004 rows=0.14 loops=208)
+                    Index Cond: (hotel_id = r.hotel_id)
+                    Filter: (city_name = 'Goa'::text)
+                    Rows Removed by Filter: 1
+                    Index Searches: 208
+                    Buffers: shared hit=622 read=2
+Planning:
+  Buffers: shared hit=374
+Planning Time: 1.625 ms
+Execution Time: 28.970 ms
+=== R18 run 3 ===
+Limit  (cost=6840.64..6932.47 rows=30 width=61) (actual time=26.060..28.361 rows=30.00 loops=1)
+  Buffers: shared hit=4584
+  ->  Nested Loop  (cost=6840.64..27236.05 rows=6663 width=61) (actual time=26.059..28.358 rows=30.00 loops=1)
+        Buffers: shared hit=4584
+        ->  Gather Merge  (cost=6840.34..11979.78 rows=44128 width=43) (actual time=25.849..27.406 rows=207.00 loops=1)
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=3963
+              ->  Sort  (cost=5840.32..5886.29 rows=18387 width=43) (actual time=23.325..23.349 rows=543.67 loops=3)
+                    Sort Key: r.created_at DESC
+                    Sort Method: quicksort  Memory: 1506kB
+                    Buffers: shared hit=3963
+                    Worker 0:  Sort Method: quicksort  Memory: 1462kB
+                    Worker 1:  Sort Method: quicksort  Memory: 1494kB
+                    ->  Parallel Bitmap Heap Scan on hotel_reviews r  (cost=444.10..4537.93 rows=18387 width=43) (actual time=5.454..20.459 rows=14856.00 loops=3)
+                          Recheck Cond: (review_text ~~* '%breakfast%'::text)
+                          Heap Blocks: exact=1291
+                          Buffers: shared hit=3947
+                          Worker 0:  Heap Blocks: exact=1238
+                          Worker 1:  Heap Blocks: exact=1280
+                          ->  Bitmap Index Scan on idx_hotel_reviews_text_trgm  (cost=0.00..433.06 rows=44128 width=0) (actual time=7.236..7.236 rows=44568.00 loops=1)
+                                Index Cond: (review_text ~~* '%breakfast%'::text)
+                                Index Searches: 1
+                                Buffers: shared hit=98
+        ->  Memoize  (cost=0.30..0.47 rows=1 width=26) (actual time=0.004..0.004 rows=0.14 loops=207)
+              Cache Key: r.hotel_id
+              Cache Mode: logical
+              Hits: 0  Misses: 207  Evictions: 0  Overflows: 0  Memory Usage: 16kB
+              Buffers: shared hit=621
+              ->  Index Scan using pk_hotels on hotels h  (cost=0.29..0.46 rows=1 width=26) (actual time=0.003..0.003 rows=0.14 loops=207)
+                    Index Cond: (hotel_id = r.hotel_id)
+                    Filter: (city_name = 'Goa'::text)
+                    Rows Removed by Filter: 1
+                    Index Searches: 207
+                    Buffers: shared hit=621
+Planning:
+  Buffers: shared hit=374
+Planning Time: 1.647 ms
+Execution Time: 28.455 ms
